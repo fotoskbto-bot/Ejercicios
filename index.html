@@ -1,0 +1,3363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antología Box23 - Sistema de Seguimiento de Entrenamiento</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #23f9d5;
+            --color-secondary: #FF729F;
+            --color-background: #020202;
+            --color-dark: #1a2332;
+            --color-light: #f8f9fa;
+            --color-table-header: #424b5f;
+            --color-table-hover: #324466;
+            --color-table: #3a4357;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Fondo con logo semitransparente */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('antologia_logo.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: contain;
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container-fluid {
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .navbar-brand {
+            color: var(--color-primary) !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .card {
+            background-color: var(--color-dark);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            color: var(--color-light);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-dark);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--color-light);
+            border: none;
+            padding: 12px 20px;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-dark);
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+        }
+
+        .table {
+            color: var(--color-light) !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: var(--color-table) !important;
+        }
+
+        .table th {
+            background-color: var(--color-table-header);
+            color: var(--color-primary) !important;
+            border-color: rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            position: sticky;
+            top: 0;
+        }
+
+        .table td {
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--color-light) !important;
+            padding: 10px 15px;
+            vertical-align: middle;
+            background-color: var(--color-table) !important;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--color-table-hover) !important;
+        }
+
+        .form-control, .form-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-light);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 0.25rem rgba(39, 249, 212, 0.25);
+            color: var(--color-light);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-dark);
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #1de5c0;
+            border-color: #1de5c0;
+            color: var(--color-dark);
+        }
+
+        .btn-success {
+            background-color: var(--color-secondary);
+            border-color: var(--color-secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #ff5a8f;
+            border-color: #ff5a8f;
+            color: white;
+        }
+
+        .btn-info {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-dark);
+        }
+
+        .summary-card {
+            border-left: 4px solid var(--color-primary);
+            color: var(--color-light);
+        }
+
+        .summary-card .card-title {
+            color: var(--color-primary);
+        }
+
+        .summary-card .card-text {
+            color: var(--color-light);
+        }
+
+        #exportBtn {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border: none;
+            color: var(--color-dark);
+            font-weight: bold;
+        }
+
+        .class-time {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--color-light);
+        }
+
+        .class-time h6 {
+            color: var(--color-primary);
+        }
+
+        .attendance-badge {
+            font-size: 0.85em;
+            padding: 5px 8px;
+        }
+
+        .package-warning {
+            background-color: rgba(255, 114, 159, 0.2);
+            border-left: 4px solid var(--color-secondary);
+            color: var(--color-light);
+        }
+
+        .membership-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            color: var(--color-light);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .import-export-card {
+            border: 2px dashed var(--color-primary);
+            color: var(--color-light);
+        }
+
+        .whatsapp-modal .message-preview {
+            background-color: rgba(39, 249, 212, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #25D366;
+            color: var(--color-light);
+        }
+
+        .autorestore-section {
+            background-color: rgba(39, 249, 212, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: var(--color-light);
+        }
+
+        .fix-highlight {
+            background-color: rgba(39, 249, 212, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--color-primary);
+            color: var(--color-light);
+        }
+
+        .tab-content {
+            min-height: 500px;
+        }
+
+        .modal-content {
+            background-color: var(--color-dark);
+            color: var(--color-light);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-dark);
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-label {
+            color: var(--color-primary);
+        }
+
+        .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+            color: var(--color-light);
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2327F9D4' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        }
+
+        .form-select option {
+            background-color: var(--color-dark);
+            color: var(--color-light);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-placeholder {
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-dark);
+            font-weight: bold;
+            font-size: 24px;
+            margin: 0 auto;
+        }
+
+        .date-range {
+            background-color: rgba(39, 249, 212, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            background-color: var(--color-dark);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .report-summary {
+            background-color: rgba(39, 249, 212, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: rgba(39, 249, 212, 0.2) !important;
+        }
+
+        .whatsapp-survey {
+            background-color: rgba(39, 249, 212, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .backup-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+            background-color: var(--color-secondary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        .badge {
+            font-weight: 500;
+        }
+
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .google-form-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--color-primary);
+        }
+
+        .google-form-link:hover {
+            color: #1de5c0;
+            text-decoration: none;
+            border-bottom: 1px solid #1de5c0;
+        }
+
+        .validation-error {
+            border: 1px solid #ff5a8f !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 90, 143, 0.25) !important;
+        }
+
+        .user-status-badge {
+            font-size: 0.75em;
+            padding: 3px 6px;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        .emergency-info {
+            background-color: rgba(255, 114, 159, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border-left: 4px solid var(--color-secondary);
+        }
+
+        .phone-validation-error {
+            color: #ff5a8f;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .attendance-user-list {
+            background-color: var(--color-dark);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .attendance-user-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-light) !important;
+        }
+
+        .attendance-user-item:last-child {
+            border-bottom: none;
+        }
+
+        .attendance-user-info {
+            flex: 1;
+        }
+
+        .attendance-user-name {
+            font-weight: 500;
+            color: var(--color-light) !important;
+            margin-bottom: 5px;
+        }
+
+        .attendance-user-details {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .attendance-check-container {
+            margin-right: 15px;
+        }
+
+        .attendance-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        #attendance * {
+            color: var(--color-light) !important;
+        }
+
+        .attendance-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .attendance-stat-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .attendance-stat-icon {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .attendance-stat-content h5 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .attendance-stat-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .attendance-filters {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .attendance-quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Estilos para el modal de importación */
+        .import-summary {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .import-summary-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .import-summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .import-success {
+            color: var(--color-primary);
+        }
+
+        .import-warning {
+            color: #ffc107;
+        }
+
+        .import-error {
+            color: #ff5a8f;
+        }
+
+        /* Estilos para el modal de cumpleaños */
+        .birthday-badge {
+            background: linear-gradient(135deg, #FF729F, #FFB347);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .birthday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .birthday-item:last-child {
+            border-bottom: none;
+        }
+
+        .birthday-user-info {
+            flex: 1;
+        }
+
+        .birthday-user-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .birthday-user-details {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .birthday-date {
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .birthday-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Estilos para las alertas de inasistencias */
+        .absence-alert-item {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .absence-alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .absence-alert-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Estilos personalizados para la aplicación */
+        h1 {
+            color: var(--color-primary);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box .form-control {
+            padding-left: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-primary);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .exercise-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .exercise-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 8px rgba(39, 249, 212, 0.1);
+        }
+
+        .rm-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .progress-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            border-radius: 10px;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .progression-item {
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .current-progression {
+            background-color: rgba(39, 249, 212, 0.1);
+            border-left-color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .next-progression {
+            background-color: rgba(255, 114, 159, 0.1);
+            border-left-color: var(--color-secondary);
+            font-weight: 600;
+        }
+
+        .whatsapp-options {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .data-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .csv-preview-table td, .csv-preview-table th {
+            vertical-align: middle;
+        }
+        
+        .csv-status-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
+
+        /* Estilos para GIFs de ejercicios */
+        .exercise-gif-container {
+            margin-top: 15px;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--color-primary);
+        }
+        
+        .gif-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 2px solid var(--color-primary);
+            box-shadow: 0 4px 12px rgba(39, 249, 212, 0.2);
+        }
+        
+        .gif-placeholder {
+            width: 200px;
+            height: 150px;
+            background: linear-gradient(45deg, rgba(39, 249, 212, 0.1), rgba(255, 114, 159, 0.1));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-light);
+            font-style: italic;
+            margin: 0 auto;
+            border: 2px dashed var(--color-primary);
+        }
+
+        .badge-category {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-beginner { background-color: #27F9D4; color: var(--color-dark); }
+        .badge-intermediate { background-color: #1D8A99; color: white; }
+        .badge-advanced { background-color: #7C77B9; color: white; }
+        .badge-elite { background-color: #FF8C00; color: white; }
+
+        .record-badge {
+            background: linear-gradient(135deg, #FFD700, #FF8C00);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+            
+            .card-body {
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .attendance-stats {
+                flex-direction: column;
+            }
+
+            .attendance-stat-item {
+                width: 100%;
+            }
+
+            .attendance-user-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .attendance-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .birthday-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .birthday-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .absence-alert-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .absence-alert-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-md-6, .col-md-4, .col-md-3 {
+                margin-bottom: 15px;
+            }
+            
+            .modal-dialog {
+                margin: 10px;
+            }
+            
+            .modal-body {
+                padding: 15px;
+            }
+        }
+        /* Pantalla de autenticación */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background-color: var(--color-dark);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-logo {
+            display: block;
+            margin: 0 auto 10px auto;
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--color-primary);
+        }
+
+        .user-session-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-only {
+            /* se oculta vía JS para usuarios con rol "member" */
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Autenticación -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-card">
+            <img src="antologia_logo.png" alt="Logo Antología Box23" class="auth-logo">
+            <h2 class="text-center mb-1">Antología Box23</h2>
+            <p class="text-center text-muted mb-4">Sistema de Seguimiento de Entrenamiento</p>
+
+            <ul class="nav nav-tabs mb-3" id="authTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPane" type="button" role="tab">Ingresar</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPane" type="button" role="tab">Crear cuenta</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Login -->
+                <div class="tab-pane fade show active" id="loginPane" role="tabpanel">
+                    <div id="loginAlert" class="alert alert-danger d-none"></div>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginUsername" class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="loginUsername" required autocomplete="username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="loginPassword" required autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="loginBtn">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Registro -->
+                <div class="tab-pane fade" id="registerPane" role="tabpanel">
+                    <div id="registerAlert" class="alert alert-danger d-none"></div>
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="regName" class="form-label">Nombre completo *</label>
+                                <input type="text" class="form-control" id="regName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="regPhone" class="form-label">Teléfono (10 dígitos) *</label>
+                                <input type="tel" class="form-control" id="regPhone" placeholder="3208009736" required maxlength="10">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="regCategory" class="form-label">Categoría *</label>
+                                <select class="form-select" id="regCategory" required>
+                                    <option value="">Seleccionar categoría</option>
+                                    <option value="principiante">Principiante</option>
+                                    <option value="intermedio">Intermedio</option>
+                                    <option value="avanzado">Avanzado</option>
+                                    <option value="elite">Élite</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="regWeight" class="form-label">Peso corporal (kg) *</label>
+                                <input type="number" step="0.1" class="form-control" id="regWeight" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="regUsername" class="form-label">Usuario *</label>
+                            <input type="text" class="form-control" id="regUsername" required autocomplete="username">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="regPassword" class="form-label">Contraseña *</label>
+                                <input type="password" class="form-control" id="regPassword" required minlength="6" autocomplete="new-password">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="regPassword2" class="form-label">Confirmar contraseña *</label>
+                                <input type="password" class="form-control" id="regPassword2" required minlength="6" autocomplete="new-password">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="regAdminCode" class="form-label">Código de entrenador/administrador (opcional)</label>
+                            <input type="text" class="form-control" id="regAdminCode" placeholder="Déjelo vacío si es un miembro del gimnasio">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="registerBtn">
+                            <i class="fas fa-user-plus"></i> Crear cuenta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de la aplicación (oculto hasta iniciar sesión) -->
+    <div id="appContent" style="display:none;">
+
+    <!-- Modal Compartir WhatsApp -->
+    <div class="modal fade" id="whatsappModal" tabindex="-1" aria-labelledby="whatsappModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="whatsappModalLabel"><i class="fab fa-whatsapp"></i> Compartir Datos por WhatsApp</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="whatsapp-options">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="whatsappUserSelect" class="form-label">Seleccionar Usuario</label>
+                                <select class="form-select" id="whatsappUserSelect">
+                                    <option value="all">Todos los usuarios</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="whatsappDataType" class="form-label">Tipo de Datos</label>
+                                <select class="form-select" id="whatsappDataType">
+                                    <option value="summary">Resumen</option>
+                                    <option value="rm">Solo RM</option>
+                                    <option value="progressions">Solo Gimnasticos</option>
+                                    <option value="all">Todos los datos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="includeCSV" checked>
+                            <label class="form-check-label" for="includeCSV">
+                                Incluir archivo CSV en el mensaje
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="whatsappMessage" class="form-label">Mensaje personalizado</label>
+                        <textarea class="form-control" id="whatsappMessage" rows="3" placeholder="Mensaje que acompañará los datos..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Vista previa del CSV</label>
+                        <div class="data-preview" id="csvPreview">
+                            Los datos CSV se generarán aquí...
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <span id="whatsappInfoText">
+                            El mensaje se enviará al instructor (3208009736). Los datos CSV se incluirán en el mensaje.
+                        </span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="downloadCSVBtn">
+                        <i class="fas fa-download"></i> Descargar CSV
+                    </button>
+                    <button type="button" class="btn btn-success" id="sendWhatsAppBtn">
+                        <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Vista Previa de Carga CSV -->
+    <div class="modal fade" id="csvPreviewModal" tabindex="-1" aria-labelledby="csvPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="csvPreviewModalLabel"><i class="fas fa-file-csv"></i> Vista Previa de Carga de Usuarios desde CSV</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-3">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <strong>Atención:</strong> Se detectaron usuarios duplicados. Revise los cambios antes de confirmar.
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h4 id="newUsersCount">0</h4>
+                                    <p class="mb-0">Nuevos usuarios</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body text-center">
+                                    <h4 id="updatedUsersCount">0</h4>
+                                    <p class="mb-0">Usuarios a actualizar</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h4 id="unchangedUsersCount">0</h4>
+                                    <p class="mb-0">Sin cambios</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover csv-preview-table" id="csvPreviewTable">
+                            <thead>
+                                <tr>
+                                    <th>Estado</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Categoría</th>
+                                    <th>Peso (kg)</th>
+                                    <th>Acción</th>
+                                    <th>Detalles</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csvPreviewContent">
+                                <!-- Contenido generado dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i>
+                        <small>
+                            <strong>Leyenda:</strong> 
+                            <span class="badge bg-success csv-status-badge">Nuevo</span> - Usuario no existente, 
+                            <span class="badge bg-warning csv-status-badge">Actualizar</span> - Usuario existente con cambios, 
+                            <span class="badge bg-info csv-status-badge">Sin cambios</span> - Usuario existente sin modificaciones,
+                            <span class="badge bg-danger csv-status-badge">Error</span> - Datos inválidos
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="confirmCSVUpload">
+                        <i class="fas fa-check-circle"></i> Confirmar Carga
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para GIFs de ejercicios -->
+    <div class="modal fade" id="exerciseGifModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exerciseGifModalLabel">
+                        <i class="fas fa-running"></i> Demostración del Ejercicio
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h4 id="exerciseGifName"></h4>
+                    <img id="exerciseGifPreview" class="gif-preview img-fluid" style="max-height: 400px; display: none;">
+                    <div id="exerciseGifPlaceholder" class="gif-placeholder mt-3" style="width: 100%; height: 300px;">
+                        <i class="fas fa-question-circle fa-3x mb-3"></i><br>
+                        <p>GIF no disponible para este ejercicio</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Usuario -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel"><i class="fas fa-user-plus"></i> Registrar Nuevo Usuario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="userName" class="form-label">Nombre completo *</label>
+                                <input type="text" class="form-control" id="userName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="userPhone" class="form-label">Teléfono *</label>
+                                <input type="tel" class="form-control" id="userPhone" placeholder="3208009736" required>
+                                <div class="phone-validation-error" id="userPhoneError">Formato inválido. Use 10 dígitos sin espacios ni símbolos.</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="userCategory" class="form-label">Categoría *</label>
+                                <select class="form-select" id="userCategory" required>
+                                    <option value="">Seleccionar categoría</option>
+                                    <option value="principiante">Principiante</option>
+                                    <option value="intermedio">Intermedio</option>
+                                    <option value="avanzado">Avanzado</option>
+                                    <option value="elite">Élite</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="userWeight" class="form-label">Peso corporal (kg) *</label>
+                                <input type="number" step="0.1" class="form-control" id="userWeight" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="userNotes" class="form-label">Notas adicionales (opcional)</label>
+                                <textarea class="form-control" id="userNotes" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveUserBtn">Guardar Usuario</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal RM Levantamiento -->
+    <div class="modal fade" id="rmModal" tabindex="-1" aria-labelledby="rmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rmModalLabel"><i class="fas fa-dumbbell"></i> Registrar Repetición Máxima (RM)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="rmForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rmUser" class="form-label">Usuario *</label>
+                                <select class="form-select" id="rmUser" required>
+                                    <option value="">Seleccionar usuario</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rmExercise" class="form-label">Ejercicio *</label>
+                                <select class="form-select" id="rmExercise" required>
+                                    <option value="">Seleccionar ejercicio de levantamiento</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3" id="rmExerciseGifContainer" style="display: none;">
+                            <label class="form-label">Demostración del ejercicio:</label>
+                            <div class="exercise-gif-container">
+                                <img id="rmExerciseGif" class="gif-preview" style="display: none;">
+                                <div id="rmExerciseGifPlaceholder" class="gif-placeholder">
+                                    <i class="fas fa-running fa-2x mb-2"></i><br>
+                                    GIF de demostración se cargará aquí
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="rmWeight" class="form-label">Peso (kg) *</label>
+                                <input type="number" step="0.1" class="form-control" id="rmWeight" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="rmReps" class="form-label">Repeticiones *</label>
+                                <input type="number" class="form-control" id="rmReps" min="1" max="10" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="rmDate" class="form-label">Fecha *</label>
+                                <input type="date" class="form-control" id="rmDate" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="rmNotes" class="form-label">Notas (opcional)</label>
+                                <textarea class="form-control" id="rmNotes" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-calculator"></i> <strong>Calculadora de 1RM:</strong>
+                            <div id="rmCalculation" class="mt-2">
+                                <div class="rm-value">1RM estimado: <span id="estimatedRM">0</span> kg</div>
+                                <small>Fórmula Brzycki: 1RM = Peso / (1.0278 - 0.0278 × Repeticiones)</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveRMBtn">Guardar RM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Progresión -->
+    <div class="modal fade" id="progressionModal" tabindex="-1" aria-labelledby="progressionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="progressionModalLabel"><i class="fas fa-chart-line"></i> Registrar Progresión</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="progressionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="progressionUser" class="form-label">Usuario *</label>
+                                <select class="form-select" id="progressionUser" required>
+                                    <option value="">Seleccionar usuario</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="progressionExercise" class="form-label">Ejercicio *</label>
+                                <select class="form-select" id="progressionExercise" required>
+                                    <option value="">Seleccionar ejercicio gimnástico</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3" id="progressionExerciseGifContainer" style="display: none;">
+                            <label class="form-label">Demostración del ejercicio:</label>
+                            <div class="exercise-gif-container">
+                                <img id="progressionExerciseGif" class="gif-preview" style="display: none;">
+                                <div id="progressionExerciseGifPlaceholder" class="gif-placeholder">
+                                    <i class="fas fa-running fa-2x mb-2"></i><br>
+                                    GIF de demostración se cargará aquí
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="progressionLevel" class="form-label">Nivel actual *</label>
+                                <select class="form-select" id="progressionLevel" required>
+                                    <option value="">Seleccionar nivel alcanzado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="progressionDate" class="form-label">Fecha *</label>
+                                <input type="date" class="form-control" id="progressionDate" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="progressionDetails" class="form-label">Detalles de ejecución (opcional)</label>
+                                <textarea class="form-control" id="progressionDetails" rows="3" placeholder="Ej: Pull-up con banda, 3 series de 5 repeticiones..."></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="nextGoal" class="form-label">Próxima meta</label>
+                                <select class="form-select" id="nextGoal">
+                                    <option value="">Seleccionar próxima progresión</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveProgressionBtn">Guardar Progresión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Progreso Usuario -->
+    <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="progressModalLabel"><i class="fas fa-chart-bar"></i> Progreso del Usuario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="progressContent">
+                        <!-- Contenido generado dinámicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container-fluid py-3 position-relative">
+
+        <!-- Logo en la esquina superior derecha -->
+        <img src="antologia_logo.png"
+             alt="Logo Antología Box23"
+             class="logo-img d-none d-md-block" style="position: absolute; top: 20px; right: 20px; width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #fff; z-index: 1000;">
+
+        <div class="user-session-bar">
+            <span><i class="fas fa-user-circle"></i> <span id="sessionUserName"></span> <span class="badge bg-secondary" id="sessionUserRole"></span></span>
+            <button class="btn btn-sm btn-outline-light" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center mb-4">
+            <h1 class="text-center flex-grow-1">
+                <i class="fas fa-dumbbell"></i> Antología Box23 - Sistema de Seguimiento
+            </h1>
+        </div>
+        <p class="text-center mb-4">PRIMERO NOS MOVEMOS BIEN DESPUES NOS MOVEMOS MÁS</p>
+
+        <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                    <i class="fas fa-users"></i> Usuarios
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rm-tab" data-bs-toggle="tab" data-bs-target="#rm" type="button" role="tab">
+                    <i class="fas fa-weight-hanging"></i> RM Levantamiento
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="progressions-tab" data-bs-toggle="tab" data-bs-target="#progressions" type="button" role="tab">
+                    <i class="fas fa-chart-line"></i> Gimnasticos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab">
+                    <i class="fas fa-database"></i> Datos
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="mainTabContent">
+            <!-- Pestaña Usuarios -->
+            <div class="tab-pane fade show active" id="users" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-user-plus"></i> Registrar Usuario</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary w-100 mb-3 admin-only" data-bs-toggle="modal" data-bs-target="#userModal">
+                                    <i class="fas fa-plus-circle"></i> Nuevo Usuario
+                                </button>
+                                <p class="text-muted small member-only d-none"><i class="fas fa-info-circle"></i> Puede editar su propio perfil desde la lista.</p>
+                                <div class="summary-card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Resumen de Usuarios</h6>
+                                        <div class="row text-center mt-3">
+                                            <div class="col-6">
+                                                <h4 id="totalUsers">0</h4>
+                                                <small>Total</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <h4 id="activeUsers">0</h4>
+                                                <small>Activos</small>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle"></i> Registre usuarios para comenzar el seguimiento de su entrenamiento.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="fas fa-users"></i> Lista de Usuarios</h5>
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" class="form-control" id="searchUserInput" placeholder="Buscar usuario...">
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="usersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Teléfono</th>
+                                                <th>Categoría</th>
+                                                <th>Peso</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersList">
+                                            <!-- Usuarios cargados dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pestaña RM Levantamiento -->
+            <div class="tab-pane fade" id="rm" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-dumbbell"></i> Registrar RM</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#rmModal">
+                                    <i class="fas fa-plus-circle"></i> Nuevo Registro RM
+                                </button>
+                                <div class="summary-card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Calculadora 1RM</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label">Peso (kg)</label>
+                                            <input type="number" class="form-control" id="calcWeight" step="0.1" placeholder="Ej: 50">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Repeticiones</label>
+                                            <input type="number" class="form-control" id="calcReps" min="1" max="10" placeholder="Ej: 5">
+                                        </div>
+                                        <button class="btn btn-success w-100" id="calculateRM">Calcular 1RM</button>
+                                        <div class="mt-3 text-center">
+                                            <h4 id="calculatedRM">0 kg</h4>
+                                            <small>1RM Estimado</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-history"></i> Historial de RM</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <select class="form-select" id="filterRMUser">
+                                            <option value="">Todos los usuarios</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select class="form-select" id="filterRMExercise">
+                                            <option value="">Todos los ejercicios</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="rmTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Usuario</th>
+                                                <th>Ejercicio</th>
+                                                <th>Peso</th>
+                                                <th>Reps</th>
+                                                <th>1RM</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="rmList">
+                                            <!-- Registros RM cargados dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-trophy"></i> Records Personales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="personalRecords">
+                                    <!-- Records cargados dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pestaña Progresiones -->
+            <div class="tab-pane fade" id="progressions" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-chart-line"></i> Registrar Progresión</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#progressionModal">
+                                    <i class="fas fa-plus-circle"></i> Nueva Progresión
+                                </button>
+                                <div class="summary-card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Progreso General</h6>
+                                        <div class="progress-container">
+                                            <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
+                                        </div>
+                                        <div class="row text-center mt-3">
+                                            <div class="col-4">
+                                                <h5 id="totalProgressions">0</h5>
+                                                <small>Total</small>
+                                            </div>
+                                            <div class="col-4">
+                                                <h5 id="masteryCount">0</h5>
+                                                <small>Maestrías</small>
+                                            </div>
+                                            <div class="col-4">
+                                                <h5 id="regressionCount">0</h5>
+                                                <small>Regresiones</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-history"></i> Historial de Progresiones</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <select class="form-select" id="filterProgressionUser">
+                                            <option value="">Todos los usuarios</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select class="form-select" id="filterProgressionExercise">
+                                            <option value="">Todos los ejercicios</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="progressionTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Usuario</th>
+                                                <th>Ejercicio</th>
+                                                <th>Nivel</th>
+                                                <th>Próxima Meta</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="progressionList">
+                                            <!-- Progresiones cargadas dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-star"></i> Máximos Logros por Ejercicio</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="achievementsList">
+                                    <!-- Logros cargados dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pestaña Datos -->
+            <div class="tab-pane fade" id="data" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-file-export"></i> Exportar Datos</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <p>Exporte todos los datos del sistema a un archivo Excel</p>
+                                <button class="btn btn-success mb-3 w-100" id="exportAllData">
+                                    <i class="fas fa-file-excel"></i> Exportar Todo a Excel
+                                </button>
+                                <button class="btn btn-warning w-100 mb-3" data-bs-toggle="modal" data-bs-target="#whatsappModal">
+                                    <i class="fab fa-whatsapp"></i> Compartir por WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-database"></i> Estadísticas Rápidas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-4 mb-3">
+                                        <h4 id="infoTotalUsers">0</h4>
+                                        <small>Usuarios</small>
+                                    </div>
+                                    <div class="col-4 mb-3">
+                                        <h4 id="infoTotalRM">0</h4>
+                                        <small>Registros RM</small>
+                                    </div>
+                                    <div class="col-4 mb-3">
+                                        <h4 id="infoTotalProgressions">0</h4>
+                                        <small>Progresiones</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-info-circle"></i> Información del Sistema</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="card summary-card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title" id="infoTotalUsers2">0</h5>
+                                        <p class="card-text">Usuarios</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="card summary-card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title" id="infoTotalRM2">0</h5>
+                                        <p class="card-text">Registros RM</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="card summary-card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title" id="infoTotalProgressions2">0</h5>
+                                        <p class="card-text">Progresiones</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="card summary-card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title" id="infoLastBackup">Nunca</h5>
+                                        <p class="card-text">Último respaldo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i>
+                            <small>Los datos se almacenan de forma centralizada en Google Sheets. Aun así, se recomienda exportar respaldos periódicamente.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-success rounded-circle p-3 floating-btn" id="quickExportBtn" data-bs-toggle="tooltip" data-bs-placement="left" title="Exportar rápido">
+            <i class="fas fa-file-excel fa-2x"></i>
+        </button>
+    </div>
+    </div> <!-- fin #appContent -->
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        // ==================== CONFIGURACIÓN DE LA API (Google Sheets) ====================
+        // Pega aquí la URL de tu implementación de Google Apps Script (Code.gs)
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbz-9aY-0dk_GM0JEoKibFovrtRly9feHG1E89uUkW4snaYPEXUhrFjWlMaoiOo1FbvWkA/exec'
+        };
+
+        // Datos en memoria (se llenan desde Google Sheets tras iniciar sesión)
+        let users = [];
+        let rmRecords = [];
+        let progressions = [];
+
+        // Sesión actual
+        let currentSession = null; // { token, role, userId, username, name }
+
+        // ==================== LLAMADAS A LA API ====================
+
+        function apiCall(action, payload) {
+            payload = payload || {};
+            payload.action = action;
+            if (currentSession && currentSession.token) payload.token = currentSession.token;
+
+            return fetch(CONFIG.API_URL, {
+                method: 'POST',
+                // text/plain evita el preflight CORS; Apps Script igual responde en JSON
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+                .then(function (res) { return res.json(); })
+                .catch(function (err) {
+                    console.error('Error de conexión con la API:', err);
+                    return { success: false, message: 'No se pudo conectar con Google Sheets. Verifique CONFIG.API_URL y su conexión.' };
+                });
+        }
+
+        // ==================== SESIÓN ====================
+
+        function saveSessionLocally(session) {
+            currentSession = session;
+            localStorage.setItem('antologia_session', JSON.stringify(session));
+        }
+
+        function clearSessionLocally() {
+            currentSession = null;
+            localStorage.removeItem('antologia_session');
+        }
+
+        function showAuthScreen() {
+            $('#authScreen').show();
+            $('#appContent').hide();
+        }
+
+        async function showAppScreen() {
+            $('#authScreen').hide();
+            $('#appContent').show();
+
+            $('#sessionUserName').text(currentSession.name);
+            $('#sessionUserRole').text(currentSession.role === 'admin' ? 'Administrador' : 'Miembro');
+
+            applyRoleRestrictions();
+
+            await loadAllData();
+            initializeApp();
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        }
+
+        function applyRoleRestrictions() {
+            const isAdmin = currentSession.role === 'admin';
+            $('.admin-only').toggleClass('d-none', !isAdmin).each(function () {
+                if (isAdmin) $(this).removeAttr('disabled'); 
+            });
+            $('.member-only').toggleClass('d-none', isAdmin);
+        }
+
+        async function loadAllData() {
+            const [usersRes, rmRes, progRes] = await Promise.all([
+                apiCall('getUsers'),
+                apiCall('getRM'),
+                apiCall('getProgressions')
+            ]);
+
+            users = (usersRes && usersRes.success) ? usersRes.users.map(normalizeUser) : [];
+            rmRecords = (rmRes && rmRes.success) ? rmRes.records.map(normalizeRM) : [];
+            progressions = (progRes && progRes.success) ? progRes.progressions.map(normalizeProgression) : [];
+
+            loadUsers();
+            updateUserSelects();
+            loadRMRecords();
+            loadProgressions();
+            loadWhatsAppUsers();
+            updateStats();
+        }
+
+        // Normaliza los valores que llegan desde Google Sheets (texto/numero) al
+        // formato que ya esperaba el resto de la app
+        function normalizeUser(u) {
+            return Object.assign({}, u, {
+                weight: parseFloat(u.weight) || 0,
+                active: (u.active === true || u.active === 'TRUE' || u.active === 'true')
+            });
+        }
+        function normalizeRM(r) {
+            return Object.assign({}, r, {
+                weight: parseFloat(r.weight) || 0,
+                reps: parseInt(r.reps, 10) || 0,
+                rm: parseFloat(r.rm) || 0
+            });
+        }
+        function normalizeProgression(p) {
+            return Object.assign({}, p);
+        }
+
+        async function refreshUsers() {
+            const res = await apiCall('getUsers');
+            users = (res && res.success) ? res.users.map(normalizeUser) : users;
+        }
+        async function refreshRM() {
+            const res = await apiCall('getRM');
+            rmRecords = (res && res.success) ? res.records.map(normalizeRM) : rmRecords;
+        }
+        async function refreshProgressions() {
+            const res = await apiCall('getProgressions');
+            progressions = (res && res.success) ? res.progressions.map(normalizeProgression) : progressions;
+        }
+
+        // ==================== EVENTOS DE LOGIN / REGISTRO / LOGOUT ====================
+
+        $(function () {
+            if (!CONFIG.API_URL || CONFIG.API_URL.indexOf('PEGA_AQUI') !== -1) {
+                $('#loginAlert').removeClass('d-none').text('⚠️ Falta configurar CONFIG.API_URL con la URL de tu Google Apps Script.');
+            }
+
+            const savedSession = localStorage.getItem('antologia_session');
+            if (savedSession) {
+                currentSession = JSON.parse(savedSession);
+                apiCall('validateSession').then(function (res) {
+                    if (res && res.success) {
+                        saveSessionLocally({
+                            token: currentSession.token,
+                            role: res.role,
+                            userId: res.userId,
+                            username: res.username,
+                            name: res.name
+                        });
+                        showAppScreen();
+                    } else {
+                        clearSessionLocally();
+                        showAuthScreen();
+                    }
+                });
+            } else {
+                showAuthScreen();
+            }
+
+            $('#loginForm').on('submit', async function (e) {
+                e.preventDefault();
+                $('#loginAlert').addClass('d-none');
+                const btn = $('#loginBtn');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Ingresando...');
+
+                const res = await apiCall('login', {
+                    username: $('#loginUsername').val().trim(),
+                    password: $('#loginPassword').val()
+                });
+
+                btn.prop('disabled', false).html('<i class="fas fa-sign-in-alt"></i> Ingresar');
+
+                if (res && res.success) {
+                    saveSessionLocally(res);
+                    showAppScreen();
+                } else {
+                    $('#loginAlert').removeClass('d-none').text((res && res.message) || 'No se pudo iniciar sesión.');
+                }
+            });
+
+            $('#registerForm').on('submit', async function (e) {
+                e.preventDefault();
+                $('#registerAlert').addClass('d-none');
+
+                if ($('#regPassword').val() !== $('#regPassword2').val()) {
+                    $('#registerAlert').removeClass('d-none').text('Las contraseñas no coinciden.');
+                    return;
+                }
+
+                const btn = $('#registerBtn');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creando cuenta...');
+
+                const res = await apiCall('register', {
+                    name: $('#regName').val().trim(),
+                    phone: $('#regPhone').val().trim(),
+                    category: $('#regCategory').val(),
+                    weight: $('#regWeight').val(),
+                    username: $('#regUsername').val().trim(),
+                    password: $('#regPassword').val(),
+                    adminCode: $('#regAdminCode').val().trim()
+                });
+
+                btn.prop('disabled', false).html('<i class="fas fa-user-plus"></i> Crear cuenta');
+
+                if (res && res.success) {
+                    alert('Cuenta creada correctamente. Ahora puede iniciar sesión.');
+                    $('#registerForm')[0].reset();
+                    $('#login-tab').tab('show');
+                    $('#loginUsername').val($('#regUsername').val());
+                } else {
+                    $('#registerAlert').removeClass('d-none').text((res && res.message) || 'No se pudo crear la cuenta.');
+                }
+            });
+
+            $('#logoutBtn').on('click', async function () {
+                if (!confirm('¿Cerrar sesión?')) return;
+                await apiCall('logout');
+                clearSessionLocally();
+                location.reload();
+            });
+        });
+        
+        // Datos para procesamiento CSV
+        let csvUsersData = [];
+        let csvProcessingResults = [];
+        
+        // Lista de ejercicios con GIFs demostrativos
+        const exercises = [
+            // Ejercicios Gimnásticos
+            { 
+                name: "Pull-up", 
+                category: "gimnastic",
+                progressions: ["Pull-up Australiana", "Pull-up con banda", "Jumping Pull-up", "Pull-up con Kipping", "Pull-up estricto", "Pull-up con peso"],
+                gif: "https://i.makeagif.com/media/12-16-2025/9ko-n1.gif"
+            },
+            { 
+                name: "Push-up", 
+                category: "gimnastic",
+                progressions: ["Push-up en pared", "Push-up en cajon", "Push-up en rodillas", "Push-up acostandose", "Push-up completo", "Push-up con elevación de pies"],
+                gif: "https://i.makeagif.com/media/12-16-2025/-ucvib.gif"
+            },
+            { 
+                name: "Burpee", 
+                category: "gimnastic",
+                progressions: ["Burpee sin push-up", "Burpee completo", "Burpee con salto", "Burpee con pull-up"],
+                gif: "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWY0djNsZm4zdm1iZGljbHg1aHR5Nnp5ZTRnaHYzb2VnNnRxb3V0ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sdPLLtuVeRdJ9DyCej/giphy.gif"
+            },
+            { 
+                name: "Box Jump", 
+                category: "gimnastic",
+                progressions: ["Pasos al cajon", "Box jump bajo", "Box jump medio", "Box jump alto"],
+                gif: "https://media.giphy.com/media/glD2SrkFrTJ3FUyyGB/giphy.gif"
+            },
+            { 
+                name: "Double Under", 
+                category: "gimnastic",
+                progressions: ["Single Under", "Doble Under/Single Under", "Doble Under continuo", "CrosOver Doble Under"],
+                gif: "https://media.giphy.com/media/eM17sh2q1hZrtLUagB/giphy.gif"
+            },
+            { 
+                name: "Handstand Push-up", 
+                category: "gimnastic",
+                progressions: ["Pike push-up", "Handstand con cajon", "Handstand push-up Kipping", "Handstand push-up estricto", "Handstand push-up deficit"],
+                gif: "https://i.makeagif.com/media/12-16-2025/PWjcAx.gif"
+            },
+            { 
+                name: "Handstand walk", 
+                category: "gimnastic",
+                progressions: ["Handstand hold", "Handstand Shoulder Taps", "Handstand wall lateral walking", "Handstand walk corto", "Handstand walk medio", "Handstand walk largo"],
+                gif: "https://i.makeagif.com/media/12-16-2025/8Wjo7o.gif"
+            },
+            { 
+                name: "Wall walk", 
+                category: "gimnastic",
+                progressions: ["Inclinación contra pared", "Wall walk parcial", "Wall walk completo"],
+                gif: "https://i.makeagif.com/media/4-13-2026/PIsGow.gif"
+            },
+            { 
+                name: "Pistol Squat", 
+                category: "gimnastic",
+                progressions: ["Pistol Squat en cajón", "Pistol Squat con pie atras", "Pistol Squat asistido", "Pistol Squat con elevacion y soporte", "Pistol Squat sin elevacion con soporte", "Pistol Squat libre"],
+                gif: "https://i.makeagif.com/media/12-16-2025/O-pCd_.gif"
+            },
+            { 
+                name: "Toes-to-bar", 
+                category: "gimnastic",
+                progressions: ["Knee raises", "Toes-to-rig", "Toes-to-bar asistido", "Toes-to-bar completo", "Toes-to-bar enlazado"],
+                gif: "https://i.makeagif.com/media/12-16-2025/bjI-r9.gif"
+            },
+            { 
+                name: "Rope Climb", 
+                category: "gimnastic",
+                progressions: ["Rope pull", "Rope climb asistido", "Rope climb con piernas", "Rope climb sin piernas"],
+                gif: "https://i.makeagif.com/media/4-13-2026/70eg3q.gif"
+            },
+            { 
+                name: "Muscle-up", 
+                category: "gimnastic",
+                progressions: ["Pull-up explosivo", "Transition drills", "Muscle-up con banda", "Muscle-up completo", "Muscle-up completo enlazado", "Muscle-up estricto"],
+                gif: "https://media.giphy.com/media/MWzJdPnzXeRrwzvXzm/giphy.gif"
+            },
+            
+            // Ejercicios de Levantamiento
+            { name: "Deadlift", category: "weightlifting", gif: "https://media.giphy.com/media/FK9b8whh0BLyNrA86X/giphy.gif" },
+            { name: "Snatch", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/q0qopw.gif" },
+            { name: "Thruster", category: "weightlifting", gif: "https://media.giphy.com/media/9iIklRRy3sA8WOb4v1/giphy.gif" },
+            { name: "Cluster", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/vamVa3.gif" },
+            { name: "Clean & Jerk", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/zBVzBn.gif" },
+            { name: "Push Jerk", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/bVLyvU.gif" },
+            { name: "Split Jerk", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/iE46JM.gif" },
+            { name: "Front Squat", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/PzxnRS.gif" },
+            { name: "Back Squat", category: "weightlifting", gif: "https://media.giphy.com/media/SO492RNU3htWaBeVaz/giphy.gif" },
+            { name: "Bench press", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/5oACKe.gif" },
+            { name: "Clean", category: "weightlifting", gif: "https://media.giphy.com/media/c10FJ0dpZ5CEF03JTO/giphy.gif" }
+        ];
+
+        function initializeApp() {
+            // Configurar fecha actual por defecto
+            const today = new Date().toISOString().split('T')[0];
+            $('#rmDate').val(today);
+            $('#progressionDate').val(today);
+            
+            // Cargar ejercicios de levantamiento en modal RM
+            exercises
+                .filter(ex => ex.category === "weightlifting")
+                .forEach(exercise => {
+                    $('#rmExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
+                    $('#filterRMExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
+                });
+            
+            // Cargar ejercicios gimnásticos en modal Progresiones
+            exercises
+                .filter(ex => ex.category === "gimnastic")
+                .forEach(exercise => {
+                    $('#progressionExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
+                    $('#filterProgressionExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
+                });
+            
+            // Evento para mostrar GIFs de ejercicios
+            $('#rmExercise').change(function() {
+                const exerciseName = $(this).val();
+                showExerciseGif(exerciseName, 'rm');
+            });
+
+            $('#progressionExercise').change(function() {
+                const exerciseName = $(this).val();
+                showExerciseGif(exerciseName, 'progression');
+            });
+            
+            // Evento para cargar progresiones cuando se selecciona un ejercicio
+            $('#progressionExercise').change(function() {
+                loadNextGoalOptions();
+            });
+            
+            // Evento para actualizar nivel cuando se selecciona una progresión
+            $('#progressionLevel').change(function() {
+                updateNextGoalBasedOnCurrent();
+            });
+            
+            // Validación de teléfono
+            $('#userPhone').on('input', function() {
+                validatePhone($(this), $('#userPhoneError'));
+            });
+            
+            // Cálculo de RM en tiempo real
+            $('#rmWeight, #rmReps').on('input', function() {
+                calculateRM();
+            });
+            
+            // Calculadora independiente
+            $('#calculateRM').click(function() {
+                const weight = parseFloat($('#calcWeight').val()) || 0;
+                const reps = parseInt($('#calcReps').val()) || 0;
+                if (weight > 0 && reps > 0) {
+                    const rm = calculate1RM(weight, reps);
+                    $('#calculatedRM').text(rm.toFixed(1) + ' kg');
+                }
+            });
+            
+            // Guardar usuario
+            $('#saveUserBtn').click(function() {
+                saveUser();
+            });
+            
+            // Guardar RM
+            $('#saveRMBtn').click(function() {
+                saveRM();
+            });
+            
+            // Guardar progresión
+            $('#saveProgressionBtn').click(function() {
+                saveProgression();
+            });
+            
+            // Exportar datos
+            $('#exportAllData').click(function() {
+                exportData();
+            });
+            
+            // WhatsApp: eventos para actualizar vista previa
+            $('#whatsappUserSelect, #whatsappDataType, #includeCSV, #whatsappMessage').on('change input', function() {
+                updateCSVPreview();
+            });
+            
+            // WhatsApp: descargar CSV
+            $('#downloadCSVBtn').click(function() {
+                downloadCSV();
+            });
+            
+            // WhatsApp: enviar por WhatsApp
+            $('#sendWhatsAppBtn').click(function() {
+                sendWhatsApp();
+            });
+            
+            // Búsqueda de usuarios
+            $('#searchUserInput').on('input', function() {
+                searchUsers($(this).val());
+            });
+            
+            // Filtros RM
+            $('#filterRMUser, #filterRMExercise').change(function() {
+                filterRMRecords();
+            });
+            
+            // Filtros progresiones
+            $('#filterProgressionUser, #filterProgressionExercise').change(function() {
+                filterProgressions();
+            });
+            
+            // Exportación rápida
+            $('#quickExportBtn').click(function() {
+                quickExport();
+            });
+            
+            // Inicializar selects de usuarios en modales
+            updateUserSelects();
+            
+            // Cargar usuarios en modal WhatsApp
+            loadWhatsAppUsers();
+            
+            // Confirmar carga de CSV
+            $('#confirmCSVUpload').click(function() {
+                confirmCSVUpload();
+            });
+        }
+
+        // ==================== FUNCIONES PARA GIFs ====================
+        
+        function showExerciseGif(exerciseName, type) {
+            // Buscar el ejercicio para obtener su GIF
+            let exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
+            
+            // Si no se encuentra en ejercicios gimnásticos, buscar en levantamiento
+            if (!exercise && type === 'rm') {
+                exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "weightlifting");
+            }
+            
+            const containerId = `#${type}ExerciseGifContainer`;
+            const gifId = `#${type}ExerciseGif`;
+            const placeholderId = `#${type}ExerciseGifPlaceholder`;
+            
+            if (exercise && exercise.gif) {
+                $(gifId).attr('src', exercise.gif).show();
+                $(placeholderId).hide();
+                $(containerId).show();
+                
+                // Agregar información del ejercicio
+                $(containerId + ' .exercise-gif-container').append(`
+                    <small class="text-muted mt-2 d-block">
+                        <i class="fas fa-info-circle"></i> 
+                        ${exercise.category === 'gimnastic' ? 'Ejercicio gimnástico' : 'Ejercicio de levantamiento'}
+                    </small>
+                `);
+            } else {
+                $(gifId).hide();
+                $(placeholderId).show().html(`
+                    <i class="fas fa-question-circle fa-2x mb-2"></i><br>
+                    <small>No hay GIF disponible para "${exerciseName}"</small>
+                `);
+                $(containerId).show();
+            }
+        }
+
+        function showExerciseGifModal(exerciseName) {
+            const exercise = exercises.find(ex => ex.name === exerciseName);
+            
+            $('#exerciseGifName').text(exerciseName);
+            
+            if (exercise && exercise.gif) {
+                $('#exerciseGifPreview').attr('src', exercise.gif).show();
+                $('#exerciseGifPlaceholder').hide();
+            } else {
+                $('#exerciseGifPreview').hide();
+                $('#exerciseGifPlaceholder').show().html(`
+                    <i class="fas fa-question-circle fa-3x mb-3"></i><br>
+                    <p>No hay GIF disponible para "${exerciseName}"</p>
+                    <small class="text-muted">Busca el ejercicio en YouTube para ver técnicas correctas</small>
+                `);
+            }
+            
+            $('#exerciseGifModal').modal('show');
+        }
+
+        // ==================== FUNCIONES PARA WHATSAPP ====================
+        
+        function loadWhatsAppUsers() {
+            const select = $('#whatsappUserSelect');
+            select.empty();
+            select.append('<option value="all">Todos los usuarios</option>');
+            users.forEach(user => {
+                select.append(`<option value="${user.id}">${user.name}</option>`);
+            });
+        }
+
+        function generateCSVData() {
+            const userId = $('#whatsappUserSelect').val();
+            const dataType = $('#whatsappDataType').val();
+            
+            let csvContent = "";
+            
+            if (userId === "all") {
+                // Todos los usuarios
+                if (dataType === "summary" || dataType === "all") {
+                    csvContent += "RESUMEN DE USUARIOS\n";
+                    csvContent += "Nombre,Telefono,Categoria,Peso (kg),Notas\n";
+                    users.forEach(user => {
+                        csvContent += `"${user.name}","${user.phone}","${user.category}",${user.weight},"${user.notes || ''}"\n`;
+                    });
+                    csvContent += "\n";
+                }
+                
+                if (dataType === "rm" || dataType === "all") {
+                    csvContent += "REGISTROS DE RM\n";
+                    csvContent += "Usuario,Ejercicio,Peso (kg),Repeticiones,1RM (kg),Fecha,Notas\n";
+                    rmRecords.forEach(record => {
+                        csvContent += `"${record.userName}","${record.exercise}",${record.weight},${record.reps},${record.rm.toFixed(1)},"${record.date}","${record.notes || ''}"\n`;
+                    });
+                    csvContent += "\n";
+                }
+                
+                if (dataType === "progressions" || dataType === "all") {
+                    csvContent += "PROGRESIONES\n";
+                    csvContent += "Usuario,Ejercicio,Nivel,Fecha,Detalles,Proxima Meta\n";
+                    progressions.forEach(progression => {
+                        csvContent += `"${progression.userName}","${progression.exercise}","${progression.level}","${progression.date}","${progression.details || ''}","${progression.nextGoal || ''}"\n`;
+                    });
+                }
+            } else {
+                // Usuario específico
+                const user = users.find(u => u.id === userId);
+                if (!user) return "";
+                
+                csvContent += `DATOS DE ${user.name.toUpperCase()}\n`;
+                csvContent += `Telefono: ${user.phone}, Categoria: ${user.category}, Peso: ${user.weight}kg\n\n`;
+                
+                if (dataType === "summary" || dataType === "all" || dataType === "rm") {
+                    csvContent += "REGISTROS DE RM\n";
+                    csvContent += "Ejercicio,Peso (kg),Repeticiones,1RM (kg),Fecha,Notas\n";
+                    const userRM = rmRecords.filter(r => r.userId === userId);
+                    userRM.forEach(record => {
+                        csvContent += `"${record.exercise}",${record.weight},${record.reps},${record.rm.toFixed(1)},"${record.date}","${record.notes || ''}"\n`;
+                    });
+                    csvContent += "\n";
+                }
+                
+                if (dataType === "summary" || dataType === "all" || dataType === "progressions") {
+                    csvContent += "PROGRESIONES\n";
+                    csvContent += "Ejercicio,Nivel,Fecha,Detalles,Proxima Meta\n";
+                    const userProgressions = progressions.filter(p => p.userId === userId);
+                    userProgressions.forEach(progression => {
+                        csvContent += `"${progression.exercise}","${progression.level}","${progression.date}","${progression.details || ''}","${progression.nextGoal || ''}"\n`;
+                    });
+                }
+                
+                // Agregar records personales
+                if (dataType === "summary" || dataType === "all") {
+                    csvContent += "\nRECORDS PERSONALES\n";
+                    csvContent += "Ejercicio,1RM Maximo (kg),Fecha\n";
+                    
+                    // Encontrar máximo por ejercicio
+                    const recordsByExercise = {};
+                    rmRecords.filter(r => r.userId === userId).forEach(record => {
+                        if (!recordsByExercise[record.exercise] || record.rm > recordsByExercise[record.exercise].rm) {
+                            recordsByExercise[record.exercise] = record;
+                        }
+                    });
+                    
+                    Object.values(recordsByExercise).forEach(record => {
+                        csvContent += `"${record.exercise}",${record.rm.toFixed(1)},"${record.date}"\n`;
+                    });
+                }
+            }
+            
+            return csvContent;
+        }
+
+        function updateCSVPreview() {
+            const csvContent = generateCSVData();
+            const preview = $('#csvPreview');
+            
+            if (csvContent.length > 1000) {
+                preview.text(csvContent.substring(0, 1000) + "\n\n... (continuación en el archivo completo)");
+            } else {
+                preview.text(csvContent);
+            }
+            
+            // Actualizar texto informativo
+            const userId = $('#whatsappUserSelect').val();
+            const dataType = $('#whatsappDataType').val();
+            const includeCSV = $('#includeCSV').is(':checked');
+            
+            let infoText = "El mensaje se enviará al instructor (3208009736). ";
+            
+            if (userId === "all") {
+                infoText += "Se enviarán datos de todos los usuarios. ";
+            } else {
+                const user = users.find(u => u.id === userId);
+                if (user) {
+                    infoText += `Se enviarán datos de ${user.name}. `;
+                }
+            }
+            
+            if (includeCSV) {
+                infoText += "Los datos CSV se incluirán en el mensaje.";
+            } else {
+                infoText += "Solo se enviará un resumen.";
+            }
+            
+            $('#whatsappInfoText').text(infoText);
+        }
+
+        function downloadCSV() {
+            const csvContent = generateCSVData();
+            if (!csvContent) {
+                alert("No hay datos para descargar");
+                return;
+            }
+            
+            const userId = $('#whatsappUserSelect').val();
+            const user = users.find(u => u.id === userId);
+            const filename = userId === "all" 
+                ? `AntologiaBox23_Datos_Completos_${new Date().toISOString().split('T')[0]}.csv`
+                : `AntologiaBox23_${user.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`Archivo ${filename} descargado correctamente`);
+        }
+
+        function sendWhatsApp() {
+            const phone = '+573208009736';
+            const customMessage = $('#whatsappMessage').val() || "Datos de entrenamiento Antología Box23";
+            const includeCSV = $('#includeCSV').is(':checked');
+            const csvContent = generateCSVData();
+            
+            if (!csvContent) {
+                alert("No hay datos para enviar");
+                return;
+            }
+            
+            let fullMessage = customMessage;
+            
+            if (includeCSV) {
+                // Limitar el tamaño del mensaje para WhatsApp (aproximadamente 4000 caracteres)
+                const maxLength = 3500; // Dejamos margen para el mensaje personalizado
+                if (csvContent.length + customMessage.length > maxLength) {
+                    const truncatedCSV = csvContent.substring(0, maxLength - customMessage.length - 100) + "\n\n... (mensaje truncado por límite de WhatsApp)";
+                    fullMessage += "\n\n" + truncatedCSV;
+                } else {
+                    fullMessage += "\n\n" + csvContent;
+                }
+            } else {
+                // Solo resumen
+                const userId = $('#whatsappUserSelect').val();
+                if (userId === "all") {
+                    fullMessage += `\n\nResumen Antología Box23:\n`;
+                    fullMessage += `Usuarios: ${users.length}\n`;
+                    fullMessage += `Registros RM: ${rmRecords.length}\n`;
+                    fullMessage += `Progresiones: ${progressions.length}\n`;
+                    fullMessage += `Fecha: ${formatDate(new Date())}`;
+                } else {
+                    const user = users.find(u => u.id === userId);
+                    if (user) {
+                        const userRM = rmRecords.filter(r => r.userId === userId);
+                        const userProgressions = progressions.filter(p => p.userId === userId);
+                        
+                        fullMessage += `\n\nResumen de ${user.name}:\n`;
+                        fullMessage += `Categoría: ${user.category}\n`;
+                        fullMessage += `Peso: ${user.weight} kg\n`;
+                        fullMessage += `Registros RM: ${userRM.length}\n`;
+                        fullMessage += `Progresiones: ${userProgressions.length}\n`;
+                        
+                        // Top 3 records
+                        const topRecords = userRM.sort((a, b) => b.rm - a.rm).slice(0, 3);
+                        if (topRecords.length > 0) {
+                            fullMessage += `\nTop 3 Records:\n`;
+                            topRecords.forEach(record => {
+                                fullMessage += `- ${record.exercise}: ${record.rm.toFixed(1)} kg\n`;
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Codificar para URL
+            const encodedMessage = encodeURIComponent(fullMessage);
+            
+            // Usar wa.me para mejor compatibilidad
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+            
+            // Abrir en nueva ventana
+            window.open(whatsappUrl, '_blank');
+            
+            // Cerrar modal
+            $('#whatsappModal').modal('hide');
+            
+            // Resetear formulario
+            $('#whatsappMessage').val('');
+            $('#whatsappUserSelect').val('all');
+            $('#whatsappDataType').val('summary');
+            $('#includeCSV').prop('checked', true);
+        }
+
+        // ==================== FUNCIONES PRINCIPALES ====================
+        
+        function validatePhone(input, errorElement) {
+            const phone = input.val().replace(/\D/g, '');
+            if (phone.length === 10) {
+                errorElement.hide();
+                return true;
+            } else {
+                errorElement.show();
+                return false;
+            }
+        }
+
+        function calculate1RM(weight, reps) {
+            return weight / (1.0278 - 0.0278 * reps);
+        }
+
+        function calculateRM() {
+            const weight = parseFloat($('#rmWeight').val()) || 0;
+            const reps = parseInt($('#rmReps').val()) || 0;
+            if (weight > 0 && reps > 0) {
+                const rm = calculate1RM(weight, reps);
+                $('#estimatedRM').text(rm.toFixed(1));
+            }
+        }
+
+        function loadNextGoalOptions() {
+            const exerciseName = $('#progressionExercise').val();
+            if (!exerciseName) return;
+            
+            const exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
+            const nextGoalSelect = $('#nextGoal');
+            
+            nextGoalSelect.empty();
+            nextGoalSelect.append('<option value="">Seleccionar próxima progresión</option>');
+            
+            if (exercise && exercise.progressions) {
+                exercise.progressions.forEach(progression => {
+                    nextGoalSelect.append(`<option value="${progression}">${progression}</option>`);
+                });
+            }
+            
+            const userId = $('#progressionUser').val();
+            if (userId) {
+                const userProgressions = progressions.filter(p => 
+                    p.userId === userId && p.exercise === exerciseName
+                ).sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                if (userProgressions.length > 0) {
+                    const lastProgression = userProgressions[0];
+                    const progressionIndex = exercise.progressions.indexOf(lastProgression.level);
+                    
+                    $('#progressionLevel').empty();
+                    $('#progressionLevel').append('<option value="">Seleccionar nivel alcanzado</option>');
+                    
+                    exercise.progressions.forEach((prog, index) => {
+                        $('#progressionLevel').append(`<option value="${prog}">${prog}</option>`);
+                    });
+                    
+                    if (lastProgression.level) {
+                        $('#progressionLevel').val(lastProgression.level);
+                    }
+                    
+                    if (progressionIndex >= 0 && progressionIndex < exercise.progressions.length - 1) {
+                        nextGoalSelect.val(exercise.progressions[progressionIndex + 1]);
+                    } else if (progressionIndex === exercise.progressions.length - 1) {
+                        nextGoalSelect.val("¡Dominado!");
+                    }
+                } else {
+                    $('#progressionLevel').empty();
+                    $('#progressionLevel').append('<option value="">Seleccionar nivel alcanzado</option>');
+                    exercise.progressions.forEach(prog => {
+                        $('#progressionLevel').append(`<option value="${prog}">${prog}</option>`);
+                    });
+                }
+            }
+        }
+
+        function updateNextGoalBasedOnCurrent() {
+            const currentLevel = $('#progressionLevel').val();
+            const exerciseName = $('#progressionExercise').val();
+            
+            if (!currentLevel || !exerciseName) return;
+            
+            const exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
+            if (!exercise || !exercise.progressions) return;
+            
+            const currentIndex = exercise.progressions.indexOf(currentLevel);
+            const nextGoalSelect = $('#nextGoal');
+            
+            if (currentIndex >= 0 && currentIndex < exercise.progressions.length - 1) {
+                nextGoalSelect.val(exercise.progressions[currentIndex + 1]);
+            } else if (currentIndex === exercise.progressions.length - 1) {
+                nextGoalSelect.val("¡Dominado!");
+            }
+        }
+
+        async function saveUser() {
+            const name = $('#userName').val().trim();
+            const phone = $('#userPhone').val().replace(/\D/g, '');
+            const category = $('#userCategory').val();
+            const weight = parseFloat($('#userWeight').val());
+            const notes = $('#userNotes').val().trim();
+            
+            if (!name || !phone || !category || !weight) {
+                alert('Por favor complete todos los campos obligatorios');
+                return;
+            }
+            
+            if (phone.length !== 10) {
+                alert('El teléfono debe tener 10 dígitos');
+                return;
+            }
+
+            const btn = $('#saveUserBtn');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
+            const res = await apiCall('saveUser', {
+                user: { id: $('#userId').val(), name, phone, category, weight, notes }
+            });
+
+            btn.prop('disabled', false).html('Guardar Usuario');
+
+            if (!res || !res.success) {
+                alert((res && res.message) || 'No se pudo guardar el usuario.');
+                return;
+            }
+
+            await refreshUsers();
+            $('#userModal').modal('hide');
+            resetUserForm();
+            loadUsers();
+            updateUserSelects();
+            loadWhatsAppUsers();
+            updateStats();
+        }
+
+        async function saveRM() {
+            const userId = currentSession.role === 'member' ? currentSession.userId : $('#rmUser').val();
+            const exercise = $('#rmExercise').val();
+            const weight = parseFloat($('#rmWeight').val());
+            const reps = parseInt($('#rmReps').val());
+            const date = $('#rmDate').val();
+            const notes = $('#rmNotes').val().trim();
+            
+            if (!userId || !exercise || !weight || !reps || !date) {
+                alert('Por favor complete todos los campos obligatorios');
+                return;
+            }
+            
+            if (weight <= 0 || reps <= 0) {
+                alert('El peso y las repeticiones deben ser mayores a 0');
+                return;
+            }
+
+            const btn = $('#saveRMBtn');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
+            const res = await apiCall('saveRM', {
+                record: { userId, exercise, weight, reps, date, notes }
+            });
+
+            btn.prop('disabled', false).html('Guardar RM');
+
+            if (!res || !res.success) {
+                alert((res && res.message) || 'No se pudo guardar el registro.');
+                return;
+            }
+
+            await refreshRM();
+            $('#rmModal').modal('hide');
+            resetRMForm();
+            loadRMRecords();
+            updateStats();
+        }
+
+        async function saveProgression() {
+            const userId = currentSession.role === 'member' ? currentSession.userId : $('#progressionUser').val();
+            const exercise = $('#progressionExercise').val();
+            const level = $('#progressionLevel').val();
+            const date = $('#progressionDate').val();
+            const details = $('#progressionDetails').val().trim();
+            const nextGoal = $('#nextGoal').val();
+            
+            if (!userId || !exercise || !level || !date) {
+                alert('Por favor complete todos los campos obligatorios');
+                return;
+            }
+
+            const btn = $('#saveProgressionBtn');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
+            const res = await apiCall('saveProgression', {
+                progression: { userId, exercise, level, date, details, nextGoal }
+            });
+
+            btn.prop('disabled', false).html('Guardar Progresión');
+
+            if (!res || !res.success) {
+                alert((res && res.message) || 'No se pudo guardar la progresión.');
+                return;
+            }
+
+            await refreshProgressions();
+            $('#progressionModal').modal('hide');
+            resetProgressionForm();
+            loadProgressions();
+            updateStats();
+        }
+
+        function loadUsers() {
+            const usersList = $('#usersList');
+            usersList.empty();
+            
+            users.forEach(user => {
+                const categoryClass = `badge-${user.category}`;
+                const row = `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar me-2">${user.name.charAt(0)}</div>
+                                <div>
+                                    <strong>${user.name}</strong>
+                                    ${user.notes ? `<br><small class="text-muted">${user.notes.substring(0, 30)}${user.notes.length > 30 ? '...' : ''}</small>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.phone}</td>
+                        <td><span class="badge-category ${categoryClass}">${user.category}</span></td>
+                        <td>${user.weight} kg</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="viewUserProgress('${user.id}')" title="Ver progreso">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editUser('${user.id}')" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${currentSession && currentSession.role === 'admin' ? `
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.id}')" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>` : ''}
+                        </td>
+                    </tr>
+                `;
+                usersList.append(row);
+            });
+            
+            $('#totalUsers').text(users.length);
+            $('#activeUsers').text(users.filter(u => u.active).length);
+            $('#infoTotalUsers').text(users.length);
+            $('#infoTotalUsers2').text(users.length);
+        }
+
+        function loadRMRecords() {
+            const rmList = $('#rmList');
+            rmList.empty();
+            
+            let filteredRecords = rmRecords;
+            const userFilter = $('#filterRMUser').val();
+            const exerciseFilter = $('#filterRMExercise').val();
+            
+            if (userFilter) {
+                filteredRecords = filteredRecords.filter(r => r.userId === userFilter);
+            }
+            
+            if (exerciseFilter) {
+                filteredRecords = filteredRecords.filter(r => r.exercise === exerciseFilter);
+            }
+            
+            filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            filteredRecords.forEach(record => {
+                const row = `
+                    <tr>
+                        <td>${formatDate(record.date)}</td>
+                        <td>${record.userName}</td>
+                        <td>
+                            ${record.exercise}
+                            <button class="btn btn-sm btn-outline-info ms-2" onclick="showExerciseGifModal('${record.exercise}')" 
+                                    title="Ver demostración">
+                                <i class="fas fa-play-circle"></i>
+                            </button>
+                        </td>
+                        <td>${record.weight} kg</td>
+                        <td>${record.reps}</td>
+                        <td><strong class="text-secundary">${record.rm.toFixed(1)} kg</strong></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRMRecord('${record.id}')" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                rmList.append(row);
+            });
+            
+            loadPersonalRecords();
+            $('#infoTotalRM').text(rmRecords.length);
+            $('#infoTotalRM2').text(rmRecords.length);
+        }
+
+        function loadProgressions() {
+            const progressionList = $('#progressionList');
+            progressionList.empty();
+            
+            let filteredProgressions = progressions;
+            const userFilter = $('#filterProgressionUser').val();
+            const exerciseFilter = $('#filterProgressionExercise').val();
+            
+            if (userFilter) {
+                filteredProgressions = filteredProgressions.filter(p => p.userId === userFilter);
+            }
+            
+            if (exerciseFilter) {
+                filteredProgressions = filteredProgressions.filter(p => p.exercise === exerciseFilter);
+            }
+            
+            filteredProgressions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            filteredProgressions.forEach(progression => {
+                const levelBadge = progression.level.includes("Dominado") ? 'success' : 
+                                 progression.level.includes("asistido") ? 'warning' : 'primary';
+                const row = `
+                    <tr>
+                        <td>${formatDate(progression.date)}</td>
+                        <td>${progression.userName}</td>
+                        <td>
+                            ${progression.exercise}
+                            <button class="btn btn-sm btn-outline-info ms-2" onclick="showExerciseGifModal('${progression.exercise}')" 
+                                    title="Ver demostración">
+                                <i class="fas fa-play-circle"></i>
+                            </button>
+                        </td>
+                        <td><span class="badge bg-${levelBadge}">${progression.level}</span></td>
+                        <td>${progression.nextGoal || 'No especificada'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProgression('${progression.id}')" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                progressionList.append(row);
+            });
+            
+            loadAchievements();
+            $('#infoTotalProgressions').text(progressions.length);
+            $('#infoTotalProgressions2').text(progressions.length);
+        }
+
+        function loadPersonalRecords() {
+            const personalRecords = $('#personalRecords');
+            personalRecords.empty();
+            
+            const recordsByUserExercise = {};
+            
+            rmRecords.forEach(record => {
+                const key = `${record.userId}-${record.exercise}`;
+                if (!recordsByUserExercise[key] || record.rm > recordsByUserExercise[key].rm) {
+                    recordsByUserExercise[key] = record;
+                }
+            });
+            
+            const recordsArray = Object.values(recordsByUserExercise);
+            
+            if (recordsArray.length === 0) {
+                personalRecords.html('<p class="text-muted text-center">No hay records registrados aún.</p>');
+                return;
+            }
+            
+            recordsArray.slice(0, 5).forEach(record => {
+                // Encontrar el usuario para obtener su peso corporal
+                const user = users.find(u => u.id === record.userId);
+                let bodyWeightRatio = "";
+                
+                if (user && user.weight && user.weight > 0) {
+                    const ratio = (record.rm / user.weight).toFixed(1);
+                    bodyWeightRatio = `
+                        <div class="mt-1">
+                            <small class="text-success">
+                                <i class="fas fa-balance-scale"></i> 
+                                ${ratio}x tu peso corporal (${user.weight} kg)
+                            </small>
+                        </div>
+                    `;
+                }
+                
+                const card = `
+                    <div class="exercise-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${record.userName}</strong><br>
+                                <small>${record.exercise}</small>
+                            </div>
+                            <div class="rm-value">${record.rm.toFixed(1)} kg</div>
+                        </div>
+                        <div class="mt-2">
+                            <small>Peso: ${record.weight} kg × ${record.reps} reps</small><br>
+                            <small>Fecha: ${formatDate(record.date)}</small>
+                            ${bodyWeightRatio}
+                            <button class="btn btn-sm btn-outline-info ms-2" onclick="showExerciseGifModal('${record.exercise}')" 
+                                    title="Ver demostración">
+                                <i class="fas fa-play-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                personalRecords.append(card);
+            });
+        }
+
+        function loadAchievements() {
+            const achievementsList = $('#achievementsList');
+            achievementsList.empty();
+            
+            const achievementsByExercise = {};
+            
+            progressions.forEach(progression => {
+                const exercise = exercises.find(ex => ex.name === progression.exercise);
+                if (!exercise || !exercise.progressions) return;
+                
+                const currentIndex = exercise.progressions.indexOf(progression.level);
+                
+                if (!achievementsByExercise[progression.exercise]) {
+                    achievementsByExercise[progression.exercise] = {
+                        exercise: progression.exercise,
+                        maxLevel: progression.level,
+                        maxIndex: currentIndex,
+                        userCount: 1
+                    };
+                } else {
+                    if (currentIndex > achievementsByExercise[progression.exercise].maxIndex) {
+                        achievementsByExercise[progression.exercise].maxLevel = progression.level;
+                        achievementsByExercise[progression.exercise].maxIndex = currentIndex;
+                    }
+                    achievementsByExercise[progression.exercise].userCount++;
+                }
+            });
+            
+            Object.values(achievementsByExercise).forEach(achievement => {
+                const achievementCard = `
+                    <div class="exercise-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${achievement.exercise}</strong><br>
+                                <small>Nivel máximo alcanzado</small>
+                            </div>
+                            <div class="record-badge">${achievement.maxLevel}</div>
+                        </div>
+                        <div class="mt-2">
+                            <small>Usuarios: ${achievement.userCount}</small>
+                            <button class="btn btn-sm btn-outline-info ms-2" onclick="showExerciseGifModal('${achievement.exercise}')" 
+                                    title="Ver demostración">
+                                <i class="fas fa-play-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                achievementsList.append(achievementCard);
+            });
+            
+            $('#totalProgressions').text(progressions.length);
+            const masteryCount = progressions.filter(p => p.level.includes("Dominado") || p.level.includes("completo")).length;
+            $('#masteryCount').text(masteryCount);
+            const regressionCount = progressions.filter(p => p.level.includes("asistido") || p.level.includes("parcial")).length;
+            $('#regressionCount').text(regressionCount);
+            
+            const totalProgressions = progressions.length;
+            const progressPercentage = totalProgressions > 0 ? (masteryCount / totalProgressions) * 100 : 0;
+            $('#overallProgress').css('width', `${progressPercentage}%`);
+        }
+
+        function viewUserProgress(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+            
+            const userRM = rmRecords.filter(r => r.userId === userId);
+            const userProgressions = progressions.filter(p => p.userId === userId);
+            
+            let content = `
+                <div class="text-center mb-4">
+                    <div class="user-avatar mx-auto mb-2" style="width: 60px; height: 60px; font-size: 1.5rem;">${user.name.charAt(0)}</div>
+                    <h4>${user.name}</h4>
+                    <p class="text-muted">${user.category} • ${user.weight} kg</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Records de RM</h6>
+                            </div>
+                            <div class="card-body">
+            `;
+            
+            if (userRM.length > 0) {
+                const maxByExercise = {};
+                userRM.forEach(record => {
+                    if (!maxByExercise[record.exercise] || record.rm > maxByExercise[record.exercise].rm) {
+                        maxByExercise[record.exercise] = record;
+                    }
+                });
+                
+                Object.values(maxByExercise).forEach(record => {
+                    content += `
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>${record.exercise}</strong>
+                                <span class="text-primary">${record.rm.toFixed(1)} kg</span>
+                            </div>
+                            <small class="text-muted">${formatDate(record.date)} - ${record.weight} kg × ${record.reps} reps</small>
+                        </div>
+                    `;
+                });
+            } else {
+                content += '<p class="text-muted text-center">No hay registros de RM</p>';
+            }
+            
+            content += `
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Progresiones Actuales</h6>
+                    </div>
+                    <div class="card-body">
+            `;
+            
+            if (userProgressions.length > 0) {
+                const lastByExercise = {};
+                userProgressions.forEach(progression => {
+                    if (!lastByExercise[progression.exercise] || 
+                        new Date(progression.date) > new Date(lastByExercise[progression.exercise].date)) {
+                        lastByExercise[progression.exercise] = progression;
+                    }
+                });
+                
+                Object.values(lastByExercise).forEach(progression => {
+                    const exercise = exercises.find(ex => ex.name === progression.exercise);
+                    content += `
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>${progression.exercise}</strong>
+                                <span class="badge bg-primary">${progression.level}</span>
+                            </div>
+                            ${progression.nextGoal ? `<small>Próximo: ${progression.nextGoal}</small><br>` : ''}
+                            <small class="text-muted">${formatDate(progression.date)}</small>
+                        </div>
+                    `;
+                });
+            } else {
+                content += '<p class="text-muted text-center">No hay progresiones registradas</p>';
+            }
+            
+            content += `
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Progresión Detallada por Ejercicio</h6>
+            </div>
+            <div class="card-body">
+            `;
+            
+            const gymnasticExercises = exercises.filter(ex => ex.category === "gimnastic");
+            gymnasticExercises.forEach(exercise => {
+                const exerciseProgressions = userProgressions
+                    .filter(p => p.exercise === exercise.name)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                if (exerciseProgressions.length > 0) {
+                    content += `
+                        <div class="mb-4">
+                            <h6>${exercise.name}</h6>
+                            <div class="progression-timeline">
+                    `;
+                    
+                    exercise.progressions.forEach((prog, index) => {
+                        const userProgression = exerciseProgressions.find(p => p.level === prog);
+                        const isCurrent = userProgression && 
+                            (!exerciseProgressions[index + 1] || 
+                             exerciseProgressions[index + 1].level !== prog);
+                        
+                        content += `
+                            <div class="progression-item ${isCurrent ? 'current-progression' : ''}">
+                                ${prog}
+                                ${userProgression ? `<small class="text-muted d-block">${formatDate(userProgression.date)}</small>` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    content += `</div></div>`;
+                }
+            });
+            
+            content += `
+                </div>
+            </div>
+            `;
+            
+            $('#progressContent').html(content);
+            $('#progressModal').modal('show');
+        }
+
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+            
+            $('#userId').val(user.id);
+            $('#userName').val(user.name);
+            $('#userPhone').val(user.phone);
+            $('#userCategory').val(user.category);
+            $('#userWeight').val(user.weight);
+            $('#userNotes').val(user.notes);
+            
+            $('#userModalLabel').html('<i class="fas fa-user-edit"></i> Editar Usuario');
+            $('#userModal').modal('show');
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('¿Está seguro de eliminar este usuario? También se eliminarán sus registros de RM y progresiones.')) return;
+
+            const res = await apiCall('deleteUser', { id: userId });
+            if (!res || !res.success) {
+                alert((res && res.message) || 'No se pudo eliminar el usuario.');
+                return;
+            }
+
+            await Promise.all([refreshUsers(), refreshRM(), refreshProgressions()]);
+            loadUsers();
+            loadRMRecords();
+            loadProgressions();
+            loadWhatsAppUsers();
+            updateStats();
+        }
+
+        async function deleteRMRecord(recordId) {
+            if (!confirm('¿Está seguro de eliminar este registro?')) return;
+
+            const res = await apiCall('deleteRM', { id: recordId });
+            if (!res || !res.success) {
+                alert((res && res.message) || 'No se pudo eliminar el registro.');
+                return;
+            }
+
+            await refreshRM();
+            loadRMRecords();
+            updateStats();
+        }
+
+        async function deleteProgression(progressionId) {
+            if (!confirm('¿Está seguro de eliminar esta progresión?')) return;
+
+            const res = await apiCall('deleteProgression', { id: progressionId });
+            if (!res || !res.success) {
+                alert((res && res.message) || 'No se pudo eliminar la progresión.');
+                return;
+            }
+
+            await refreshProgressions();
+            loadProgressions();
+            updateStats();
+        }
+
+        function updateUserSelects() {
+            $('#rmUser, #progressionUser, #filterRMUser, #filterProgressionUser').empty();
+            $('#rmUser, #progressionUser').append('<option value="">Seleccionar usuario</option>');
+            $('#filterRMUser, #filterProgressionUser').append('<option value="">Todos los usuarios</option>');
+            
+            users.filter(u => u.active).forEach(user => {
+                $('#rmUser, #progressionUser').append(`<option value="${user.id}">${user.name}</option>`);
+                $('#filterRMUser, #filterProgressionUser').append(`<option value="${user.id}">${user.name}</option>`);
+            });
+        }
+
+        function resetUserForm() {
+            $('#userForm')[0].reset();
+            $('#userId').val('');
+            $('#userPhoneError').hide();
+            $('#userModalLabel').html('<i class="fas fa-user-plus"></i> Registrar Nuevo Usuario');
+        }
+
+        function resetRMForm() {
+            $('#rmForm')[0].reset();
+            $('#rmDate').val(new Date().toISOString().split('T')[0]);
+            $('#estimatedRM').text('0');
+            $('#rmExerciseGifContainer').hide();
+        }
+
+        function resetProgressionForm() {
+            $('#progressionForm')[0].reset();
+            $('#progressionDate').val(new Date().toISOString().split('T')[0]);
+            $('#nextGoal').empty().append('<option value="">Seleccionar próxima progresión</option>');
+            $('#progressionExerciseGifContainer').hide();
+        }
+
+        function searchUsers(query) {
+            query = query.toLowerCase();
+            $('#usersList tr').each(function() {
+                const text = $(this).text().toLowerCase();
+                $(this).toggle(text.indexOf(query) > -1);
+            });
+        }
+
+        function filterRMRecords() {
+            loadRMRecords();
+        }
+
+        function filterProgressions() {
+            loadProgressions();
+        }
+
+        function exportData() {
+            const data = {};
+            
+            if (users.length > 0) {
+                data.Usuarios = users.map(user => ({
+                    'ID': user.id,
+                    'Nombre': user.name,
+                    'Teléfono': user.phone,
+                    'Categoría': user.category,
+                    'Peso (kg)': user.weight,
+                    'Notas': user.notes,
+                    'Fecha Creación': formatDate(user.createdAt),
+                    'Estado': user.active ? 'Activo' : 'Inactivo'
+                }));
+            }
+            
+            if (rmRecords.length > 0) {
+                data.RM_Levantamiento = rmRecords.map(record => ({
+                    'ID': record.id,
+                    'Usuario': record.userName,
+                    'Ejercicio': record.exercise,
+                    'Peso (kg)': record.weight,
+                    'Repeticiones': record.reps,
+                    '1RM (kg)': record.rm.toFixed(1),
+                    'Fecha': formatDate(record.date),
+                    'Notas': record.notes
+                }));
+            }
+            
+            if (progressions.length > 0) {
+                data.Progresiones = progressions.map(progression => ({
+                    'ID': progression.id,
+                    'Usuario': progression.userName,
+                    'Ejercicio': progression.exercise,
+                    'Nivel Alcanzado': progression.level,
+                    'Fecha': formatDate(progression.date),
+                    'Detalles': progression.details,
+                    'Próxima Meta': progression.nextGoal
+                }));
+            }
+            
+            if (Object.keys(data).length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            const wb = XLSX.utils.book_new();
+            
+            Object.keys(data).forEach(sheetName => {
+                const ws = XLSX.utils.json_to_sheet(data[sheetName]);
+                XLSX.utils.book_append_sheet(wb, ws, sheetName);
+            });
+            
+            const fileName = `AntologiaBox23_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            
+            $('#infoLastBackup').text(formatDate(new Date()));
+            localStorage.setItem('antologia_lastBackup', new Date().toISOString());
+            
+            alert('Datos exportados exitosamente');
+        }
+
+        function quickExport() {
+            exportData();
+        }
+
+        function updateStats() {
+            $('#infoTotalUsers').text(users.length);
+            $('#infoTotalUsers2').text(users.length);
+            $('#infoTotalRM').text(rmRecords.length);
+            $('#infoTotalRM2').text(rmRecords.length);
+            $('#infoTotalProgressions').text(progressions.length);
+            $('#infoTotalProgressions2').text(progressions.length);
+            
+            const lastBackup = localStorage.getItem('antologia_lastBackup');
+            if (lastBackup) {
+                $('#infoLastBackup').text(formatDate(lastBackup));
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>
