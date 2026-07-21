@@ -1296,7 +1296,7 @@
                         <div class="mb-3" id="rmExerciseGifContainer" style="display: none;">
                             <label class="form-label">Demostración del ejercicio:</label>
                             <div class="exercise-gif-container">
-                                <img id="rmExerciseGif" class="gif-preview" style="display: none;">
+                                <video id="rmExerciseGif" class="gif-preview" style="display: none;" controls muted loop autoplay playsinline></video>
                                 <div id="rmExerciseGifPlaceholder" class="gif-placeholder">
                                     <i class="fas fa-running fa-2x mb-2"></i><br>
                                     GIF de demostración se cargará aquí
@@ -2281,7 +2281,7 @@
             const placeholderId = `#${type}ExerciseGifPlaceholder`;
             
             if (exercise && exercise.gif) {
-                $(gifId).attr('src', exercise.gif).show();
+                $(gifId).attr('src', exercise.video).show()[0].load();
                 $(placeholderId).hide();
                 $(containerId).show();
                 
