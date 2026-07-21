@@ -995,7 +995,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="regPhone" class="form-label">Teléfono (10 dígitos) *</label>
-                                <input type="tel" class="form-control" id="regPhone" placeholder="3001234567" required maxlength="10">
+                                <input type="tel" class="form-control" id="regPhone" placeholder="3208009736" required maxlength="10">
                             </div>
                         </div>
                         <div class="row">
@@ -1204,7 +1204,7 @@
                 </div>
                 <div class="modal-body text-center">
                     <h4 id="exerciseGifName"></h4>
-                    <img id="exerciseGifPreview" class="gif-preview img-fluid" style="max-height: 400px; display: none;">
+                    <video id="exerciseGifPreview" class="gif-preview img-fluid" style="max-height: 400px; display: none;" controls muted loop playsinline></video>
                     <div id="exerciseGifPlaceholder" class="gif-placeholder mt-3" style="width: 100%; height: 300px;">
                         <i class="fas fa-question-circle fa-3x mb-3"></i><br>
                         <p>GIF no disponible para este ejercicio</p>
@@ -1232,7 +1232,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="userPhone" class="form-label">Teléfono *</label>
-                                <input type="tel" class="form-control" id="userPhone" placeholder="3001234567" required>
+                                <input type="tel" class="form-control" id="userPhone" placeholder="3208009736" required>
                                 <div class="phone-validation-error" id="userPhoneError">Formato inválido. Use 10 dígitos sin espacios ni símbolos.</div>
                             </div>
                         </div>
@@ -1296,7 +1296,7 @@
                         <div class="mb-3" id="rmExerciseGifContainer" style="display: none;">
                             <label class="form-label">Demostración del ejercicio:</label>
                             <div class="exercise-gif-container">
-                                <video id="rmExerciseGif" class="gif-preview" style="display: none;" controls muted loop autoplay playsinline></video>
+                                <video id="rmExerciseGif" class="gif-preview" style="display: none;" controls muted loop playsinline></video>
                                 <div id="rmExerciseGifPlaceholder" class="gif-placeholder">
                                     <i class="fas fa-running fa-2x mb-2"></i><br>
                                     GIF de demostración se cargará aquí
@@ -1369,7 +1369,7 @@
                         <div class="mb-3" id="progressionExerciseGifContainer" style="display: none;">
                             <label class="form-label">Demostración del ejercicio:</label>
                             <div class="exercise-gif-container">
-                                <img id="progressionExerciseGif" class="gif-preview" style="display: none;">
+                                <video id="progressionExerciseGif" class="gif-preview" style="display: none;" controls muted loop playsinline></video>
                                 <div id="progressionExerciseGifPlaceholder" class="gif-placeholder">
                                     <i class="fas fa-running fa-2x mb-2"></i><br>
                                     GIF de demostración se cargará aquí
@@ -2052,87 +2052,87 @@
                 name: "Pull-up", 
                 category: "gimnastic",
                 progressions: ["Pull-up Australiana", "Pull-up con banda", "Jumping Pull-up", "Pull-up con Kipping", "Pull-up estricto", "Pull-up con peso"],
-                gif: "https://i.makeagif.com/media/12-16-2025/9ko-n1.gif"
+                video: "pullup.mp4"
             },
             { 
                 name: "Push-up", 
                 category: "gimnastic",
                 progressions: ["Push-up en pared", "Push-up en cajon", "Push-up en rodillas", "Push-up acostandose", "Push-up completo", "Push-up con elevación de pies"],
-                gif: "https://i.makeagif.com/media/12-16-2025/-ucvib.gif"
+                video: "pushup.mp4"
             },
             { 
                 name: "Burpee", 
                 category: "gimnastic",
                 progressions: ["Burpee sin push-up", "Burpee completo", "Burpee con salto", "Burpee con pull-up"],
-                gif: "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWY0djNsZm4zdm1iZGljbHg1aHR5Nnp5ZTRnaHYzb2VnNnRxb3V0ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sdPLLtuVeRdJ9DyCej/giphy.gif"
+                video: "burpee.mp4"
             },
             { 
                 name: "Box Jump", 
                 category: "gimnastic",
                 progressions: ["Pasos al cajon", "Box jump bajo", "Box jump medio", "Box jump alto"],
-                gif: "https://media.giphy.com/media/glD2SrkFrTJ3FUyyGB/giphy.gif"
+                video: "buxjump.mp4"
             },
             { 
                 name: "Double Under", 
                 category: "gimnastic",
                 progressions: ["Single Under", "Doble Under/Single Under", "Doble Under continuo", "CrosOver Doble Under"],
-                gif: "https://media.giphy.com/media/eM17sh2q1hZrtLUagB/giphy.gif"
+                video: "doubleunder.mp4"
             },
             { 
                 name: "Handstand Push-up", 
                 category: "gimnastic",
                 progressions: ["Pike push-up", "Handstand con cajon", "Handstand push-up Kipping", "Handstand push-up estricto", "Handstand push-up deficit"],
-                gif: "https://i.makeagif.com/media/12-16-2025/PWjcAx.gif"
+                video: "handstandpushup.mp4"
             },
             { 
                 name: "Handstand walk", 
                 category: "gimnastic",
                 progressions: ["Handstand hold", "Handstand Shoulder Taps", "Handstand wall lateral walking", "Handstand walk corto", "Handstand walk medio", "Handstand walk largo"],
-                gif: "https://i.makeagif.com/media/12-16-2025/8Wjo7o.gif"
+                video: "handstandwalk.mp4"
             },
             { 
                 name: "Wall walk", 
                 category: "gimnastic",
                 progressions: ["Inclinación contra pared", "Wall walk parcial", "Wall walk completo"],
-                gif: "https://i.makeagif.com/media/4-13-2026/PIsGow.gif"
+                video: "wallwalk.mp4"
             },
             { 
                 name: "Pistol Squat", 
                 category: "gimnastic",
                 progressions: ["Pistol Squat en cajón", "Pistol Squat con pie atras", "Pistol Squat asistido", "Pistol Squat con elevacion y soporte", "Pistol Squat sin elevacion con soporte", "Pistol Squat libre"],
-                gif: "https://i.makeagif.com/media/12-16-2025/O-pCd_.gif"
+                video: "pistolsquat.mp4"
             },
             { 
                 name: "Toes-to-bar", 
                 category: "gimnastic",
                 progressions: ["Knee raises", "Toes-to-rig", "Toes-to-bar asistido", "Toes-to-bar completo", "Toes-to-bar enlazado"],
-                gif: "https://i.makeagif.com/media/12-16-2025/bjI-r9.gif"
+                video: "toestobar"
             },
             { 
                 name: "Rope Climb", 
                 category: "gimnastic",
                 progressions: ["Rope pull", "Rope climb asistido", "Rope climb con piernas", "Rope climb sin piernas"],
-                gif: "https://i.makeagif.com/media/4-13-2026/70eg3q.gif"
+                video: "ropeclimb.mp4"
             },
             { 
                 name: "Muscle-up", 
                 category: "gimnastic",
                 progressions: ["Pull-up explosivo", "Transition drills", "Muscle-up con banda", "Muscle-up completo", "Muscle-up completo enlazado", "Muscle-up estricto"],
-                gif: "https://media.giphy.com/media/MWzJdPnzXeRrwzvXzm/giphy.gif"
+                video: "muscleup.mp4"
             },
             
             // Ejercicios de Levantamiento
-            { name: "Deadlift", category: "weightlifting", gif: "https://media.giphy.com/media/FK9b8whh0BLyNrA86X/giphy.gif" },
-            { name: "Snatch", category: "weightlifting", gif: "https://i.makeagif.com/media/7-21-2026/1m9CTH.gif" },
-            { name: "Thruster", category: "weightlifting", gif: "https://media.giphy.com/media/9iIklRRy3sA8WOb4v1/giphy.gif" },
-            { name: "Cluster", category: "weightlifting", gif: "https://i.makeagif.com/media/7-21-2026/ke8NgC.gif" },
-            { name: "Clean & Jerk", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/zBVzBn.gif" },
-            { name: "Push Jerk", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/bVLyvU.gif" },
-            { name: "Split Jerk", category: "weightlifting", gif: "https://i.makeagif.com/media/7-21-2026/ukwMrF.gif" },
-            { name: "Front Squat", category: "weightlifting", video: "The_Front_Squat.mp4" },
-            { name: "Back Squat", category: "weightlifting", gif: "https://media.giphy.com/media/SO492RNU3htWaBeVaz/giphy.gif" },
-            { name: "Bench press", category: "weightlifting", gif: "https://i.makeagif.com/media/12-16-2025/5oACKe.gif" },
-            { name: "Clean", category: "weightlifting", gif: "https://media.giphy.com/media/c10FJ0dpZ5CEF03JTO/giphy.gif" }
+            { name: "Deadlift", category: "weightlifting", video: "deadlift.mp4" },
+            { name: "Snatch", category: "weightlifting", video: "snatch.mp4" },
+            { name: "Thruster", category: "weightlifting", video: "thruster.mp4" },
+            { name: "Cluster", category: "weightlifting", video: "cluster.mp4" },
+            { name: "Clean & Jerk", category: "weightlifting", video: "clean&jerk.mp4" },
+            { name: "Push Jerk", category: "weightlifting", video: "pushjerk.mp4" },
+            { name: "Split Jerk", category: "weightlifting", video: "splitjerk.mp4" },
+            { name: "Front Squat", category: "weightlifting", video: "frontsquat.mp4" },
+            { name: "Back Squat", category: "weightlifting", video: "backsquat.mp4" },
+            { name: "Bench press", category: "weightlifting", video: "benchpress.mp4" },
+            { name: "Clean", category: "weightlifting", video: "clean.mp4" }
         ];
 
         function initializeApp() {
@@ -2280,7 +2280,7 @@
             const gifId = `#${type}ExerciseGif`;
             const placeholderId = `#${type}ExerciseGifPlaceholder`;
             
-            if (exercise && exercise.gif) {
+            if (exercise && exercise.video) {
                 $(gifId).attr('src', exercise.video).show()[0].load();
                 $(placeholderId).hide();
                 $(containerId).show();
@@ -2296,7 +2296,7 @@
                 $(gifId).hide();
                 $(placeholderId).show().html(`
                     <i class="fas fa-question-circle fa-2x mb-2"></i><br>
-                    <small>No hay GIF disponible para "${exerciseName}"</small>
+                    <small>No hay video disponible para "${exerciseName}"</small>
                 `);
                 $(containerId).show();
             }
@@ -2307,14 +2307,14 @@
             
             $('#exerciseGifName').text(exerciseName);
             
-            if (exercise && exercise.gif) {
-                $('#exerciseGifPreview').attr('src', exercise.gif).show();
+            if (exercise && exercise.video) {
+                $('#exerciseGifPreview').attr('src', exercise.video).show()[0].load();
                 $('#exerciseGifPlaceholder').hide();
             } else {
                 $('#exerciseGifPreview').hide();
                 $('#exerciseGifPlaceholder').show().html(`
                     <i class="fas fa-question-circle fa-3x mb-3"></i><br>
-                    <p>No hay GIF disponible para "${exerciseName}"</p>
+                    <p>No hay video disponible para "${exerciseName}"</p>
                     <small class="text-muted">Busca el ejercicio en YouTube para ver técnicas correctas</small>
                 `);
             }
