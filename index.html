@@ -1470,6 +1470,11 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
+                <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button" role="tab">
+                    <i class="fas fa-bullseye"></i> Metas Trimestrales
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab">
                     <i class="fas fa-database"></i> Datos
                 </button>
@@ -1721,6 +1726,83 @@
             </div>
             
             <!-- Pestaña Datos -->
+            <!-- Pestaña Metas Trimestrales -->
+            <div class="tab-pane fade" id="goals" role="tabpanel">
+
+                <!-- Vista Coach (solo admin) -->
+                <div class="admin-only">
+                    <div class="card mb-4">
+                        <div class="card-header"><i class="fas fa-bullseye"></i> Asignar Metas Trimestrales</div>
+                        <div class="card-body">
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Atleta</label>
+                                    <select id="goalUser" class="form-select"></select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Trimestre</label>
+                                    <select id="goalTrimester" class="form-select">
+                                        <option value="2026-T1">2026 - T1</option>
+                                        <option value="2026-T2">2026 - T2</option>
+                                        <option value="2026-T3">2026 - T3</option>
+                                        <option value="2026-T4">2026 - T4</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Levantamiento</label>
+                                    <select id="goalExerciseWeightlifting" class="form-select mb-2"></select>
+                                    <input type="text" id="goalTargetWeightlifting" class="form-control" placeholder="Meta ej: 90kg 1RM">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Gimnástico</label>
+                                    <select id="goalExerciseGimnastic" class="form-select mb-2"></select>
+                                    <input type="text" id="goalTargetGimnastic" class="form-control" placeholder="Meta ej: Pull-up estricto">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Resistencia</label>
+                                    <select id="goalExerciseResistance" class="form-select mb-2"></select>
+                                    <input type="text" id="goalTargetResistance" class="form-control" placeholder="Meta ej: 30 reps/min">
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary mt-3" onclick="saveGoals()">
+                                <i class="fas fa-save"></i> Guardar Metas
+                            </button>
+                            <div id="goalAlert" class="alert alert-danger mt-2 d-none"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-list"></i> Progreso del Box — Trimestre</div>
+                        <div class="card-body">
+                            <select id="filterGoalsTrimester" class="form-select w-auto mb-3" onchange="loadBoxProgress()">
+                                <option value="2026-T1">2026 - T1</option>
+                                <option value="2026-T2">2026 - T2</option>
+                                <option value="2026-T3">2026 - T3</option>
+                                <option value="2026-T4">2026 - T4</option>
+                            </select>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr><th>Atleta</th><th>Categoría</th><th>Ejercicio</th><th>Meta</th><th>Inicial</th><th>Actual</th></tr>
+                                    </thead>
+                                    <tbody id="boxProgressBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista Atleta (solo member) -->
+                <div class="member-only">
+                    <h4 class="mb-3">🎯 Mis Metas — <span id="myTrimester"></span></h4>
+                    <div class="row g-3" id="myGoalsCards"></div>
+                </div>
+            </div>
+
             <div class="tab-pane fade" id="data" role="tabpanel">
                 <div class="row">
                     <div class="col-md-6">
@@ -1828,13 +1910,15 @@
         // ==================== CONFIGURACIÓN DE LA API (Google Sheets) ====================
         // Pega aquí la URL de tu implementación de Google Apps Script (Code.gs)
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbzaZ46txu_IJ9Vxr1prFpoT_iLZHgZG215UrHyg90xfd6U7dckY_FS-MqI4Q86pCSztvg/exec'
+            API_URL: 'https://script.google.com/macros/s/AKfycbz-9aY-0dk_GM0JEoKibFovrtRly9feHG1E89uUkW4snaYPEXUhrFjWlMaoiOo1FbvWkA/exec'
         };
 
         // Datos en memoria (se llenan desde Google Sheets tras iniciar sesión)
         let users = [];
         let rmRecords = [];
         let progressions = [];
+        let resistanceRecords = [];
+        let goals = [];
 
         // Sesión actual
         let currentSession = null; // { token, role, userId, username, name }
@@ -1899,15 +1983,19 @@
         }
 
         async function loadAllData() {
-            const [usersRes, rmRes, progRes] = await Promise.all([
+            const [usersRes, rmRes, progRes, resRes, goalsRes] = await Promise.all([
                 apiCall('getUsers'),
                 apiCall('getRM'),
-                apiCall('getProgressions')
+                apiCall('getProgressions'),
+                apiCall('getResistance'),
+                apiCall('getGoals')
             ]);
 
             users = (usersRes && usersRes.success) ? usersRes.users.map(normalizeUser) : [];
             rmRecords = (rmRes && rmRes.success) ? rmRes.records.map(normalizeRM) : [];
             progressions = (progRes && progRes.success) ? progRes.progressions.map(normalizeProgression) : [];
+            resistanceRecords = (resRes && resRes.success) ? resRes.records.map(normalizeResistance) : [];
+            goals = (goalsRes && goalsRes.success) ? goalsRes.goals : [];
 
             loadUsers();
             updateUserSelects();
@@ -1915,6 +2003,7 @@
             loadProgressions();
             loadWhatsAppUsers();
             updateStats();
+            initGoalsTab();
         }
 
         // Normaliza los valores que llegan desde Google Sheets (texto/numero) al
@@ -1935,6 +2024,9 @@
         function normalizeProgression(p) {
             return Object.assign({}, p);
         }
+        function normalizeResistance(r) {
+            return Object.assign({}, r, { value: parseFloat(r.value) || 0 });
+        }
 
         async function refreshUsers() {
             const res = await apiCall('getUsers');
@@ -1947,6 +2039,14 @@
         async function refreshProgressions() {
             const res = await apiCall('getProgressions');
             progressions = (res && res.success) ? res.progressions.map(normalizeProgression) : progressions;
+        }
+        async function refreshResistance() {
+            const res = await apiCall('getResistance');
+            resistanceRecords = (res && res.success) ? res.records.map(normalizeResistance) : resistanceRecords;
+        }
+        async function refreshGoals() {
+            const res = await apiCall('getGoals');
+            goals = (res && res.success) ? res.goals : goals;
         }
 
         // ==================== EVENTOS DE LOGIN / REGISTRO / LOGOUT ====================
@@ -2038,6 +2138,10 @@
                 await apiCall('logout');
                 clearSessionLocally();
                 location.reload();
+            });
+
+            $('#goals-tab').on('shown.bs.tab', function () {
+                initGoalsTab();
             });
         });
         
@@ -2132,7 +2236,14 @@
             { name: "Front Squat", category: "weightlifting", video: "frontsquat.mp4" },
             { name: "Back Squat", category: "weightlifting", video: "backsquat.mp4" },
             { name: "Bench press", category: "weightlifting", video: "benchpress.mp4" },
-            { name: "Clean", category: "weightlifting", video: "clean.mp4" }
+            { name: "Clean", category: "weightlifting", video: "clean.mp4" },
+
+            // Ejercicios de Resistencia (reps o distancia en 1 minuto)
+            { name: "Row (remo)", category: "resistance", unit: "metros", video: "row.mp4" },
+            { name: "Run", category: "resistance", unit: "metros", video: "run.mp4" },
+            { name: "Wall Ball", category: "resistance", unit: "reps", video: "wallball.mp4" },
+            { name: "Kettlebell Swing", category: "resistance", unit: "reps", video: "kbswing.mp4" },
+            { name: "Air Squat", category: "resistance", unit: "reps", video: "airsquat.mp4" }
         ];
 
         function initializeApp() {
@@ -3348,6 +3459,123 @@
             if (lastBackup) {
                 $('#infoLastBackup').text(formatDate(lastBackup));
             }
+        }
+
+        // ==================== METAS TRIMESTRALES ====================
+
+        function getCurrentTrimesterLabel() {
+            const now = new Date();
+            const m = now.getMonth() + 1;
+            const t = m <= 3 ? 'T1' : m <= 6 ? 'T2' : m <= 9 ? 'T3' : 'T4';
+            return `${now.getFullYear()}-${t}`;
+        }
+
+        function initGoalsTab() {
+            $('#goalExerciseWeightlifting').empty();
+            $('#goalExerciseGimnastic').empty();
+            $('#goalExerciseResistance').empty();
+
+            exercises.filter(e => e.category === 'weightlifting').forEach(e =>
+                $('#goalExerciseWeightlifting').append(`<option value="${e.name}">${e.name}</option>`));
+            exercises.filter(e => e.category === 'gimnastic').forEach(e =>
+                $('#goalExerciseGimnastic').append(`<option value="${e.name}">${e.name}</option>`));
+            exercises.filter(e => e.category === 'resistance').forEach(e =>
+                $('#goalExerciseResistance').append(`<option value="${e.name}">${e.name}</option>`));
+
+            $('#goalUser').empty().append('<option value="">Seleccionar atleta</option>');
+            users.filter(u => u.active).forEach(u =>
+                $('#goalUser').append(`<option value="${u.id}">${u.name}</option>`));
+
+            const trimActual = getCurrentTrimesterLabel();
+            $('#goalTrimester, #filterGoalsTrimester').val(trimActual);
+
+            if (currentSession.role === 'admin') {
+                loadBoxProgress();
+            } else {
+                $('#myTrimester').text(trimActual);
+                loadMyGoals();
+            }
+        }
+
+        async function saveGoals() {
+            $('#goalAlert').addClass('d-none');
+
+            const goalsToSave = [
+                { category: 'weightlifting', exercise: $('#goalExerciseWeightlifting').val(), target: $('#goalTargetWeightlifting').val() },
+                { category: 'gimnastic', exercise: $('#goalExerciseGimnastic').val(), target: $('#goalTargetGimnastic').val() },
+                { category: 'resistance', exercise: $('#goalExerciseResistance').val(), target: $('#goalTargetResistance').val() }
+            ];
+
+            if (goalsToSave.some(g => !g.target.trim())) {
+                $('#goalAlert').removeClass('d-none').text('Completa la meta de las 3 categorías.');
+                return;
+            }
+
+            const res = await apiCall('saveGoal', {
+                userId: $('#goalUser').val(),
+                trimester: $('#goalTrimester').val(),
+                goals: goalsToSave
+            });
+
+            if (!res.success) {
+                $('#goalAlert').removeClass('d-none').text(res.message);
+                return;
+            }
+
+            alert('Metas guardadas correctamente.');
+            $('#goalTargetWeightlifting, #goalTargetGimnastic, #goalTargetResistance').val('');
+            await refreshGoals();
+            loadBoxProgress();
+        }
+
+        async function loadBoxProgress() {
+            const trimester = $('#filterGoalsTrimester').val() || getCurrentTrimesterLabel();
+            const res = await apiCall('getGoals', { trimester: trimester });
+            if (!res.success) { $('#boxProgressBody').html(''); return; }
+
+            let rows = '';
+            for (const goal of res.goals) {
+                const progress = await apiCall('getQuarterProgress', { userId: goal.userId, trimester: trimester });
+                const match = progress.success ? progress.results.find(r => r.exercise === goal.exercise) : null;
+                rows += `
+                    <tr>
+                        <td>${goal.userName}</td>
+                        <td><span class="badge bg-secondary">${goal.category}</span></td>
+                        <td>${goal.exercise}</td>
+                        <td>${goal.target}</td>
+                        <td>${match && match.valorInicial != null ? match.valorInicial : '—'}</td>
+                        <td>${match && match.valorFinal != null ? match.valorFinal : '—'}</td>
+                    </tr>`;
+            }
+            $('#boxProgressBody').html(rows || '<tr><td colspan="6" class="text-center text-muted">Sin metas asignadas este trimestre</td></tr>');
+        }
+
+        async function loadMyGoals() {
+            const trimester = getCurrentTrimesterLabel();
+            const res = await apiCall('getQuarterProgress', { userId: currentSession.userId, trimester: trimester });
+
+            if (!res.success) {
+                $('#myGoalsCards').html(`<div class="col-12"><div class="alert alert-warning">${res.message}</div></div>`);
+                return;
+            }
+
+            const colors = { weightlifting: 'primary', gimnastic: 'info', resistance: 'success' };
+            const icons = { weightlifting: '🏋️', gimnastic: '🤸', resistance: '🏃' };
+
+            $('#myGoalsCards').html(res.results.map(r => `
+                <div class="col-md-4">
+                    <div class="card border-${colors[r.category]}">
+                        <div class="card-header bg-${colors[r.category]}">${icons[r.category]} ${r.category}</div>
+                        <div class="card-body">
+                            <h6>${r.exercise}</h6>
+                            <p class="mb-1"><strong>Meta:</strong> ${r.target}</p>
+                            <p class="mb-1"><strong>Inicial:</strong> ${r.valorInicial != null ? r.valorInicial : 'Sin registro'}</p>
+                            <p class="mb-1"><strong>Actual:</strong> ${r.valorFinal != null ? r.valorFinal : 'Sin registro'}</p>
+                            <small class="text-muted">${r.totalRegistros} registro(s) este trimestre</small>
+                        </div>
+                    </div>
+                </div>
+            `).join(''));
         }
 
         function formatDate(dateString) {
