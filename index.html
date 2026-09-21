@@ -1759,12 +1759,12 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Gimnástico</label>
                                     <select id="goalExerciseGimnastic" class="form-select mb-2"></select>
-                                    <input type="text" id="goalTargetGimnastic" class="form-control" placeholder="Meta ej: Pull-up estricto">
+                                    <select id="goalTargetGimnastic" class="form-select"><option value="">Selecciona ejercicio primero</option></select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Resistencia</label>
                                     <select id="goalExerciseResistance" class="form-select mb-2"></select>
-                                    <input type="text" id="goalTargetResistance" class="form-control" placeholder="Meta ej: 30 reps/min">
+                                    <select id="goalTargetResistance" class="form-select"><option value="">Selecciona ejercicio primero</option></select>
                                 </div>
                             </div>
 
@@ -1910,7 +1910,7 @@
         // ==================== CONFIGURACIÓN DE LA API (Google Sheets) ====================
         // Pega aquí la URL de tu implementación de Google Apps Script (Code.gs)
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbzaZ46txu_IJ9Vxr1prFpoT_iLZHgZG215UrHyg90xfd6U7dckY_FS-MqI4Q86pCSztvg/exec'
+            API_URL: 'https://script.google.com/macros/s/AKfycbxjp9g6gnjGeJ2YhqoIjPsCT6ixXEt4dVMebralzmdEBax4jNRQ1SNqPued5xW-VB51_w/exec'
         };
 
         // Datos en memoria (se llenan desde Google Sheets tras iniciar sesión)
@@ -1983,18 +1983,16 @@
         }
 
         async function loadAllData() {
-            const [usersRes, rmRes, progRes, resRes, goalsRes] = await Promise.all([
+            const [usersRes, rmRes, progRes, goalsRes] = await Promise.all([
                 apiCall('getUsers'),
                 apiCall('getRM'),
                 apiCall('getProgressions'),
-                apiCall('getResistance'),
                 apiCall('getGoals')
             ]);
 
             users = (usersRes && usersRes.success) ? usersRes.users.map(normalizeUser) : [];
             rmRecords = (rmRes && rmRes.success) ? rmRes.records.map(normalizeRM) : [];
             progressions = (progRes && progRes.success) ? progRes.progressions.map(normalizeProgression) : [];
-            resistanceRecords = (resRes && resRes.success) ? resRes.records.map(normalizeResistance) : [];
             goals = (goalsRes && goalsRes.success) ? goalsRes.goals : [];
 
             loadUsers();
@@ -2177,12 +2175,6 @@
                 video: "buxjump.mp4"
             },
             { 
-                name: "Double Under", 
-                category: "gimnastic",
-                progressions: ["Single Under", "Doble Under/Single Under", "Doble Under continuo", "CrosOver Doble Under"],
-                video: "doubleunder.mp4"
-            },
-            { 
                 name: "Handstand Push-up", 
                 category: "gimnastic",
                 progressions: ["Pike push-up", "Handstand con cajon", "Handstand push-up Kipping", "Handstand push-up estricto", "Handstand push-up deficit"],
@@ -2203,8 +2195,14 @@
             { 
                 name: "Pistol Squat", 
                 category: "gimnastic",
-                progressions: ["Pistol Squat en cajón", "Pistol Squat con pie atras", "Pistol Squat asistido", "Pistol Squat con elevacion y soporte", "Pistol Squat sin elevacion con soporte", "Pistol Squat libre"],
+                progressions: ["Pistol asistido a TRX", "Pistol a banco", "Pistol completo 1 por pierna", "Pistol 5 por pierna", "Pistol 10 por pierna"],
                 video: "pistolsquat.mp4"
+            },
+            { 
+                name: "Air Squat", 
+                category: "gimnastic",
+                progressions: ["Squat asistido a banco", "Air squat 3x15", "Air squat 3x25", "Air squat 3x50", "Air squat 100 reps continuas"],
+                video: "airsquat.mp4"
             },
             { 
                 name: "Toes-to-bar", 
@@ -2238,12 +2236,27 @@
             { name: "Bench press", category: "weightlifting", video: "benchpress.mp4" },
             { name: "Clean", category: "weightlifting", video: "clean.mp4" },
 
-            // Ejercicios de Resistencia (reps o distancia en 1 minuto)
-            { name: "Row (remo)", category: "resistance", unit: "metros", video: "row.mp4" },
-            { name: "Run", category: "resistance", unit: "metros", video: "run.mp4" },
-            { name: "Wall Ball", category: "resistance", unit: "reps", video: "wallball.mp4" },
-            { name: "Kettlebell Swing", category: "resistance", unit: "reps", video: "kbswing.mp4" },
-            { name: "Air Squat", category: "resistance", unit: "reps", video: "airsquat.mp4" }
+            // Ejercicios de Resistencia (escala ordinal, igual patrón que gimnásticos)
+            {
+                name: "Row (remo)", category: "resistance", video: "row.mp4",
+                progressions: ["500 m continuos", "1000 m continuos", "2000 m < 8:30", "2000 m < 8:00", "2000 m < 7:30"]
+            },
+            {
+                name: "Run", category: "resistance", video: "run.mp4",
+                progressions: ["Caminar-trotar 20 min", "5K continuo", "5K < 25 min", "10K continuo", "10K < 50 min"]
+            },
+            {
+                name: "Double Under", category: "resistance", video: "doubleunder.mp4",
+                progressions: ["Single unders 100", "Single unders 300", "Double unders 20 seguidos", "Double unders 50 seguidos", "Double unders 100 seguidos"]
+            },
+            {
+                name: "Kettlebell Swing", category: "resistance", video: "kbswing.mp4",
+                progressions: ["KB swing con poco peso (8-12 kg)", "KB swing 16 kg x 15", "KB swing 20 kg x 15", "KB swing 24 kg x 15", "KB swing 24 kg x 20"]
+            },
+            {
+                name: "Wall Ball", category: "resistance", video: "wallball.mp4",
+                progressions: ["Wall ball 4 kg x 10", "Wall ball 6 kg x 15", "Wall ball 9 kg x 15", "Wall ball 9 kg x 20", "Wall ball 9 kg x 30"]
+            }
         ];
 
         function initializeApp() {
@@ -2260,9 +2273,9 @@
                     $('#filterRMExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
                 });
             
-            // Cargar ejercicios gimnásticos en modal Progresiones
+            // Cargar ejercicios gimnásticos y de resistencia en modal Progresiones (ambos usan escala ordinal)
             exercises
-                .filter(ex => ex.category === "gimnastic")
+                .filter(ex => ex.category === "gimnastic" || ex.category === "resistance")
                 .forEach(exercise => {
                     $('#progressionExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
                     $('#filterProgressionExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
@@ -2380,9 +2393,9 @@
         
         function showExerciseGif(exerciseName, type) {
             // Buscar el ejercicio para obtener su GIF
-            let exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
+            let exercise = exercises.find(ex => ex.name === exerciseName && (ex.category === "gimnastic" || ex.category === "resistance"));
             
-            // Si no se encuentra en ejercicios gimnásticos, buscar en levantamiento
+            // Si no se encuentra en ejercicios gimnásticos/resistencia, buscar en levantamiento
             if (!exercise && type === 'rm') {
                 exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "weightlifting");
             }
@@ -2397,10 +2410,11 @@
                 $(containerId).show();
                 
                 // Agregar información del ejercicio
+                const labels = { gimnastic: 'Ejercicio gimnástico', resistance: 'Ejercicio de resistencia', weightlifting: 'Ejercicio de levantamiento' };
                 $(containerId + ' .exercise-gif-container').append(`
                     <small class="text-muted mt-2 d-block">
                         <i class="fas fa-info-circle"></i> 
-                        ${exercise.category === 'gimnastic' ? 'Ejercicio gimnástico' : 'Ejercicio de levantamiento'}
+                        ${labels[exercise.category] || ''}
                     </small>
                 `);
             } else {
@@ -2693,7 +2707,7 @@
             const exerciseName = $('#progressionExercise').val();
             if (!exerciseName) return;
             
-            const exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
+            const exercise = exercises.find(ex => ex.name === exerciseName && (ex.category === "gimnastic" || ex.category === "resistance"));
             const nextGoalSelect = $('#nextGoal');
             
             nextGoalSelect.empty();
@@ -2747,7 +2761,7 @@
             
             if (!currentLevel || !exerciseName) return;
             
-            const exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
+            const exercise = exercises.find(ex => ex.name === exerciseName && (ex.category === "gimnastic" || ex.category === "resistance"));
             if (!exercise || !exercise.progressions) return;
             
             const currentIndex = exercise.progressions.indexOf(currentLevel);
@@ -3233,7 +3247,7 @@
             <div class="card-body">
             `;
             
-            const gymnasticExercises = exercises.filter(ex => ex.category === "gimnastic");
+            const gymnasticExercises = exercises.filter(ex => ex.category === "gimnastic" || ex.category === "resistance");
             gymnasticExercises.forEach(exercise => {
                 const exerciseProgressions = userProgressions
                     .filter(p => p.exercise === exercise.name)
@@ -3482,6 +3496,12 @@
             exercises.filter(e => e.category === 'resistance').forEach(e =>
                 $('#goalExerciseResistance').append(`<option value="${e.name}">${e.name}</option>`));
 
+            // Poblar el select de meta con la progresión real del ejercicio (evita texto libre que no calce)
+            populateGoalTargetOptions('goalExerciseGimnastic', 'goalTargetGimnastic');
+            populateGoalTargetOptions('goalExerciseResistance', 'goalTargetResistance');
+            $('#goalExerciseGimnastic').off('change').on('change', () => populateGoalTargetOptions('goalExerciseGimnastic', 'goalTargetGimnastic'));
+            $('#goalExerciseResistance').off('change').on('change', () => populateGoalTargetOptions('goalExerciseResistance', 'goalTargetResistance'));
+
             $('#goalUser').empty().append('<option value="">Seleccionar atleta</option>');
             users.filter(u => u.active).forEach(u =>
                 $('#goalUser').append(`<option value="${u.id}">${u.name}</option>`));
@@ -3497,6 +3517,24 @@
             }
         }
 
+        function populateGoalTargetOptions(exerciseSelectId, targetSelectId) {
+            const exerciseName = $(`#${exerciseSelectId}`).val();
+            const exercise = exercises.find(e => e.name === exerciseName);
+            const targetSelect = $(`#${targetSelectId}`);
+            targetSelect.empty();
+
+            if (!exercise || !exercise.progressions || exercise.progressions.length === 0) {
+                targetSelect.append('<option value="">Sin progresión definida</option>');
+                return;
+            }
+            // La meta trimestral por defecto es el último nivel de la escalera (Meta)
+            exercise.progressions.forEach((nivel, idx) => {
+                const etiqueta = idx === exercise.progressions.length - 1 ? `${nivel} (Meta sugerida)` : nivel;
+                targetSelect.append(`<option value="${nivel}">${etiqueta}</option>`);
+            });
+            targetSelect.val(exercise.progressions[exercise.progressions.length - 1]);
+        }
+
         async function saveGoals() {
             $('#goalAlert').addClass('d-none');
 
@@ -3506,7 +3544,7 @@
                 { category: 'resistance', exercise: $('#goalExerciseResistance').val(), target: $('#goalTargetResistance').val() }
             ];
 
-            if (goalsToSave.some(g => !g.target.trim())) {
+            if (goalsToSave.some(g => !g.target || !g.target.toString().trim())) {
                 $('#goalAlert').removeClass('d-none').text('Completa la meta de las 3 categorías.');
                 return;
             }
@@ -3523,7 +3561,7 @@
             }
 
             alert('Metas guardadas correctamente.');
-            $('#goalTargetWeightlifting, #goalTargetGimnastic, #goalTargetResistance').val('');
+            $('#goalTargetWeightlifting').val('');
             await refreshGoals();
             loadBoxProgress();
         }
