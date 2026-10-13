@@ -32,7 +32,8 @@ const SHEETS = {
   USERS: 'Users',
   RM: 'RM',
   PROGRESSIONS: 'Progressions',
-  SESSIONS: 'Sessions'
+  SESSIONS: 'Sessions',
+  WEEKLY: 'Weekly'
 };
 
 const HEADERS = {
@@ -40,7 +41,8 @@ const HEADERS = {
   Users: ['id', 'name', 'phone', 'category', 'weight', 'notes', 'createdAt', 'active'],
   RM: ['id', 'userId', 'userName', 'exercise', 'weight', 'reps', 'date', 'rm', 'notes'],
   Progressions: ['id', 'userId', 'userName', 'exercise', 'level', 'date', 'details', 'nextGoal'],
-  Sessions: ['token', 'userId', 'username', 'role', 'name', 'createdAt', 'expiresAt']
+  Sessions: ['token', 'userId', 'username', 'role', 'name', 'createdAt', 'expiresAt'],
+  Weekly: ['id', 'userId', 'userName', 'date', 'exercise', 'category']
 };
 
 // ==================== ENTRADA HTTP ====================
@@ -105,6 +107,12 @@ function handleRequest(e) {
       case 'deleteProgression':
         result = withAuth(params, deleteProgression);
         break;
+      case 'getWeekly':
+        result = withAuth(params, getWeekly);
+        break;
+      case 'toggleWeekly':
+        result = withAuth(params, toggleWeekly);
+        break;
       default:
         result = { success: false, message: 'Acción no reconocida: ' + action };
     }
@@ -128,6 +136,7 @@ function getSheet(name) {
     sheet = ss.insertSheet(name);
     sheet.appendRow(HEADERS[name]);
     sheet.setFrozenRows(1);
+    if (name === SHEETS.WEEKLY) sheet.getRange('D:D').setNumberFormat('@');
   }
   return sheet;
 }
@@ -416,6 +425,10 @@ function deleteUserAction(params, session) {
   authRows.filter(function (a) { return String(a.userId) === String(id); })
     .forEach(function (a) { deleteRowById(SHEETS.AUTH, a.id); });
 
+  sheetToObjects(getSheet(SHEETS.WEEKLY))
+    .filter(function (w) { return String(w.userId) === String(id); })
+    .forEach(function (w) { deleteRowById(SHEETS.WEEKLY, w.id); });
+
   return { success: true };
 }
 
@@ -543,4 +556,40 @@ function deleteProgression(params, session) {
   }
   deleteRowById(SHEETS.PROGRESSIONS, id);
   return { success: true };
+}
+
+// ==================== SEGUIMIENTO SEMANAL ====================
+function getWeekly(params, session) {
+  let rows = sheetToObjects(getSheet(SHEETS.WEEKLY));
+  if (session.role === 'member') {
+    rows = rows.filter(function (r) { return String(r.userId) === String(session.userId); });
+  }
+  return { success: true, records: rows };
+}
+
+function toggleWeekly(params, session) {
+  const input = params.entry || {};
+  const userId = session.role === 'member' ? session.userId : String(input.userId || '');
+  const date = String(input.date || '');
+  const exercise = String(input.exercise || '');
+  if (!userId || !date || !exercise) return { success: false, message: 'Datos incompletos.' };
+
+  const rows = sheetToObjects(getSheet(SHEETS.WEEKLY));
+  const found = rows.find(function (r) {
+    return String(r.userId) === String(userId) && String(r.date) === date && r.exercise === exercise;
+  });
+  if (found) {
+    deleteRowById(SHEETS.WEEKLY, found.id);
+    return { success: true, done: false };
+  }
+  const user = sheetToObjects(getSheet(SHEETS.USERS))
+    .find(function (u) { return String(u.id) === String(userId); });
+  if (!user) return { success: false, message: 'Usuario no encontrado.' };
+
+  const id = newId();
+  appendObject(SHEETS.WEEKLY, {
+    id: id, userId: userId, userName: user.name, date: date,
+    exercise: exercise, category: String(input.category || '')
+  });
+  return { success: true, done: true, id: id };
 }

@@ -1470,8 +1470,8 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button" role="tab">
-                    <i class="fas fa-bullseye"></i> Metas Trimestrales
+                <button class="nav-link" id="tracking-tab" data-bs-toggle="tab" data-bs-target="#tracking" type="button" role="tab">
+                    <i class="fas fa-calendar-check"></i> Seguimiento
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -1725,84 +1725,50 @@
                 </div>
             </div>
             
-            <!-- Pestaña Datos -->
-            <!-- Pestaña Metas Trimestrales -->
-            <div class="tab-pane fade" id="goals" role="tabpanel">
-
-                <!-- Vista Coach (solo admin) -->
-                <div class="admin-only">
-                    <div class="card mb-4">
-                        <div class="card-header"><i class="fas fa-bullseye"></i> Asignar Metas Trimestrales</div>
-                        <div class="card-body">
-                            <div class="row g-2 mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Atleta</label>
-                                    <select id="goalUser" class="form-select"></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Trimestre</label>
-                                    <select id="goalTrimester" class="form-select">
-                                        <option value="2026-T1">2026 - T1</option>
-                                        <option value="2026-T2">2026 - T2</option>
-                                        <option value="2026-T3">2026 - T3</option>
-                                        <option value="2026-T4">2026 - T4</option>
-                                    </select>
-                                </div>
+            <div class="tab-pane fade" id="tracking" role="tabpanel">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4 admin-only">
+                                <label class="form-label">Miembro</label>
+                                <select class="form-select" id="trackUser"></select>
                             </div>
-
-                            <div class="row g-2">
-                                <div class="col-md-4">
-                                    <label class="form-label">Levantamiento</label>
-                                    <select id="goalExerciseWeightlifting" class="form-select mb-2"></select>
-                                    <input type="text" id="goalTargetWeightlifting" class="form-control" placeholder="Meta ej: 90kg 1RM">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Gimnástico</label>
-                                    <select id="goalExerciseGimnastic" class="form-select mb-2"></select>
-                                    <select id="goalTargetGimnastic" class="form-select"><option value="">Selecciona ejercicio primero</option></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Resistencia</label>
-                                    <select id="goalExerciseResistance" class="form-select mb-2"></select>
-                                    <select id="goalTargetResistance" class="form-select"><option value="">Selecciona ejercicio primero</option></select>
-                                </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Periodo</label>
+                                <select class="form-select" id="trackPeriod">
+                                    <option value="week">Semanal</option>
+                                    <option value="month">Mensual</option>
+                                    <option value="quarter">Trimestral</option>
+                                </select>
                             </div>
-
-                            <button class="btn btn-primary mt-3" onclick="saveGoals()">
-                                <i class="fas fa-save"></i> Guardar Metas
-                            </button>
-                            <div id="goalAlert" class="alert alert-danger mt-2 d-none"></div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header"><i class="fas fa-list"></i> Progreso del Box — Trimestre</div>
-                        <div class="card-body">
-                            <select id="filterGoalsTrimester" class="form-select w-auto mb-3" onchange="loadBoxProgress()">
-                                <option value="2026-T1">2026 - T1</option>
-                                <option value="2026-T2">2026 - T2</option>
-                                <option value="2026-T3">2026 - T3</option>
-                                <option value="2026-T4">2026 - T4</option>
-                            </select>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr><th>Atleta</th><th>Categoría</th><th>Ejercicio</th><th>Meta</th><th>Inicial</th><th>Actual</th></tr>
-                                    </thead>
-                                    <tbody id="boxProgressBody"></tbody>
-                                </table>
+                            <div class="col-md-5 d-flex gap-2 align-items-center">
+                                <button class="btn btn-outline-light" id="trackPrev"><i class="fas fa-chevron-left"></i></button>
+                                <strong class="flex-grow-1 text-center" id="trackLabel"></strong>
+                                <button class="btn btn-outline-light" id="trackNext"><i class="fas fa-chevron-right"></i></button>
+                                <button class="btn btn-primary" id="trackToday">Hoy</button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Vista Atleta (solo member) -->
-                <div class="member-only">
-                    <h4 class="mb-3">🎯 Mis Metas — <span id="myTrimester"></span></h4>
-                    <div class="row g-3" id="myGoalsCards"></div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-3">
+                            <div class="card-header">Registro</div>
+                            <div class="card-body" id="trackBody"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card mb-3">
+                            <div class="card-header">Resumen</div>
+                            <div class="card-body" id="trackStats"></div>
+                        </div>
+                    </div>
                 </div>
+                <h5 class="mb-3"><i class="fas fa-heart-pulse"></i> Recomendaciones según lo trabajado</h5>
+                <div class="row" id="trackRecs"></div>
             </div>
 
+            <!-- Pestaña Datos -->
             <div class="tab-pane fade" id="data" role="tabpanel">
                 <div class="row">
                     <div class="col-md-6">
@@ -1910,15 +1876,13 @@
         // ==================== CONFIGURACIÓN DE LA API (Google Sheets) ====================
         // Pega aquí la URL de tu implementación de Google Apps Script (Code.gs)
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbxjp9g6gnjGeJ2YhqoIjPsCT6ixXEt4dVMebralzmdEBax4jNRQ1SNqPued5xW-VB51_w/exec'
+            API_URL: 'https://script.google.com/macros/s/AKfycbzvG-9QPQjWxrI3nWynSIng6AJqryDVKj2xffwibj1wXOLTucL8FKgVB3kcWmGf98J5xg/execs'
         };
 
         // Datos en memoria (se llenan desde Google Sheets tras iniciar sesión)
         let users = [];
         let rmRecords = [];
         let progressions = [];
-        let resistanceRecords = [];
-        let goals = [];
 
         // Sesión actual
         let currentSession = null; // { token, role, userId, username, name }
@@ -1983,17 +1947,19 @@
         }
 
         async function loadAllData() {
-            const [usersRes, rmRes, progRes, goalsRes] = await Promise.all([
+            const [usersRes, rmRes, progRes, weeklyRes] = await Promise.all([
                 apiCall('getUsers'),
                 apiCall('getRM'),
                 apiCall('getProgressions'),
-                apiCall('getGoals')
+                apiCall('getWeekly')
             ]);
 
             users = (usersRes && usersRes.success) ? usersRes.users.map(normalizeUser) : [];
             rmRecords = (rmRes && rmRes.success) ? rmRes.records.map(normalizeRM) : [];
             progressions = (progRes && progRes.success) ? progRes.progressions.map(normalizeProgression) : [];
-            goals = (goalsRes && goalsRes.success) ? goalsRes.goals : [];
+            weeklyRecords = (weeklyRes && weeklyRes.success)
+                ? weeklyRes.records.map(r => Object.assign({}, r, { date: String(r.date).substring(0, 10) }))
+                : [];
 
             loadUsers();
             updateUserSelects();
@@ -2001,7 +1967,6 @@
             loadProgressions();
             loadWhatsAppUsers();
             updateStats();
-            initGoalsTab();
         }
 
         // Normaliza los valores que llegan desde Google Sheets (texto/numero) al
@@ -2022,9 +1987,6 @@
         function normalizeProgression(p) {
             return Object.assign({}, p);
         }
-        function normalizeResistance(r) {
-            return Object.assign({}, r, { value: parseFloat(r.value) || 0 });
-        }
 
         async function refreshUsers() {
             const res = await apiCall('getUsers');
@@ -2037,14 +1999,6 @@
         async function refreshProgressions() {
             const res = await apiCall('getProgressions');
             progressions = (res && res.success) ? res.progressions.map(normalizeProgression) : progressions;
-        }
-        async function refreshResistance() {
-            const res = await apiCall('getResistance');
-            resistanceRecords = (res && res.success) ? res.records.map(normalizeResistance) : resistanceRecords;
-        }
-        async function refreshGoals() {
-            const res = await apiCall('getGoals');
-            goals = (res && res.success) ? res.goals : goals;
         }
 
         // ==================== EVENTOS DE LOGIN / REGISTRO / LOGOUT ====================
@@ -2137,10 +2091,6 @@
                 clearSessionLocally();
                 location.reload();
             });
-
-            $('#goals-tab').on('shown.bs.tab', function () {
-                initGoalsTab();
-            });
         });
         
         // Datos para procesamiento CSV
@@ -2175,6 +2125,12 @@
                 video: "buxjump.mp4"
             },
             { 
+                name: "Double Under", 
+                category: "gimnastic",
+                progressions: ["Single Under", "Doble Under/Single Under", "Doble Under continuo", "CrosOver Doble Under"],
+                video: "doubleunder.mp4"
+            },
+            { 
                 name: "Handstand Push-up", 
                 category: "gimnastic",
                 progressions: ["Pike push-up", "Handstand con cajon", "Handstand push-up Kipping", "Handstand push-up estricto", "Handstand push-up deficit"],
@@ -2195,14 +2151,8 @@
             { 
                 name: "Pistol Squat", 
                 category: "gimnastic",
-                progressions: ["Pistol asistido a TRX", "Pistol a banco", "Pistol completo 1 por pierna", "Pistol 5 por pierna", "Pistol 10 por pierna"],
+                progressions: ["Pistol Squat en cajón", "Pistol Squat con pie atras", "Pistol Squat asistido", "Pistol Squat con elevacion y soporte", "Pistol Squat sin elevacion con soporte", "Pistol Squat libre"],
                 video: "pistolsquat.mp4"
-            },
-            { 
-                name: "Air Squat", 
-                category: "gimnastic",
-                progressions: ["Squat asistido a banco", "Air squat 3x15", "Air squat 3x25", "Air squat 3x50", "Air squat 100 reps continuas"],
-                video: "airsquat.mp4"
             },
             { 
                 name: "Toes-to-bar", 
@@ -2234,29 +2184,7 @@
             { name: "Front Squat", category: "weightlifting", video: "frontsquat.mp4" },
             { name: "Back Squat", category: "weightlifting", video: "backsquat.mp4" },
             { name: "Bench press", category: "weightlifting", video: "benchpress.mp4" },
-            { name: "Clean", category: "weightlifting", video: "clean.mp4" },
-
-            // Ejercicios de Resistencia (escala ordinal, igual patrón que gimnásticos)
-            {
-                name: "Row (remo)", category: "resistance", video: "row.mp4",
-                progressions: ["500 m continuos", "1000 m continuos", "2000 m < 8:30", "2000 m < 8:00", "2000 m < 7:30"]
-            },
-            {
-                name: "Run", category: "resistance", video: "run.mp4",
-                progressions: ["Caminar-trotar 20 min", "5K continuo", "5K < 25 min", "10K continuo", "10K < 50 min"]
-            },
-            {
-                name: "Double Under", category: "resistance", video: "doubleunder.mp4",
-                progressions: ["Single unders 100", "Single unders 300", "Double unders 20 seguidos", "Double unders 50 seguidos", "Double unders 100 seguidos"]
-            },
-            {
-                name: "Kettlebell Swing", category: "resistance", video: "kbswing.mp4",
-                progressions: ["KB swing con poco peso (8-12 kg)", "KB swing 16 kg x 15", "KB swing 20 kg x 15", "KB swing 24 kg x 15", "KB swing 24 kg x 20"]
-            },
-            {
-                name: "Wall Ball", category: "resistance", video: "wallball.mp4",
-                progressions: ["Wall ball 4 kg x 10", "Wall ball 6 kg x 15", "Wall ball 9 kg x 15", "Wall ball 9 kg x 20", "Wall ball 9 kg x 30"]
-            }
+            { name: "Clean", category: "weightlifting", video: "clean.mp4" }
         ];
 
         function initializeApp() {
@@ -2273,9 +2201,9 @@
                     $('#filterRMExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
                 });
             
-            // Cargar ejercicios gimnásticos y de resistencia en modal Progresiones (ambos usan escala ordinal)
+            // Cargar ejercicios gimnásticos en modal Progresiones
             exercises
-                .filter(ex => ex.category === "gimnastic" || ex.category === "resistance")
+                .filter(ex => ex.category === "gimnastic")
                 .forEach(exercise => {
                     $('#progressionExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
                     $('#filterProgressionExercise').append(`<option value="${exercise.name}">${exercise.name}</option>`);
@@ -2387,15 +2315,17 @@
             $('#confirmCSVUpload').click(function() {
                 confirmCSVUpload();
             });
+
+            initTracking();
         }
 
         // ==================== FUNCIONES PARA GIFs ====================
         
         function showExerciseGif(exerciseName, type) {
             // Buscar el ejercicio para obtener su GIF
-            let exercise = exercises.find(ex => ex.name === exerciseName && (ex.category === "gimnastic" || ex.category === "resistance"));
+            let exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
             
-            // Si no se encuentra en ejercicios gimnásticos/resistencia, buscar en levantamiento
+            // Si no se encuentra en ejercicios gimnásticos, buscar en levantamiento
             if (!exercise && type === 'rm') {
                 exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "weightlifting");
             }
@@ -2410,11 +2340,10 @@
                 $(containerId).show();
                 
                 // Agregar información del ejercicio
-                const labels = { gimnastic: 'Ejercicio gimnástico', resistance: 'Ejercicio de resistencia', weightlifting: 'Ejercicio de levantamiento' };
                 $(containerId + ' .exercise-gif-container').append(`
                     <small class="text-muted mt-2 d-block">
                         <i class="fas fa-info-circle"></i> 
-                        ${labels[exercise.category] || ''}
+                        ${exercise.category === 'gimnastic' ? 'Ejercicio gimnástico' : 'Ejercicio de levantamiento'}
                     </small>
                 `);
             } else {
@@ -2707,7 +2636,7 @@
             const exerciseName = $('#progressionExercise').val();
             if (!exerciseName) return;
             
-            const exercise = exercises.find(ex => ex.name === exerciseName && (ex.category === "gimnastic" || ex.category === "resistance"));
+            const exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
             const nextGoalSelect = $('#nextGoal');
             
             nextGoalSelect.empty();
@@ -2761,7 +2690,7 @@
             
             if (!currentLevel || !exerciseName) return;
             
-            const exercise = exercises.find(ex => ex.name === exerciseName && (ex.category === "gimnastic" || ex.category === "resistance"));
+            const exercise = exercises.find(ex => ex.name === exerciseName && ex.category === "gimnastic");
             if (!exercise || !exercise.progressions) return;
             
             const currentIndex = exercise.progressions.indexOf(currentLevel);
@@ -3247,7 +3176,7 @@
             <div class="card-body">
             `;
             
-            const gymnasticExercises = exercises.filter(ex => ex.category === "gimnastic" || ex.category === "resistance");
+            const gymnasticExercises = exercises.filter(ex => ex.category === "gimnastic");
             gymnasticExercises.forEach(exercise => {
                 const exerciseProgressions = userProgressions
                     .filter(p => p.exercise === exercise.name)
@@ -3356,6 +3285,7 @@
                 $('#rmUser, #progressionUser').append(`<option value="${user.id}">${user.name}</option>`);
                 $('#filterRMUser, #filterProgressionUser').append(`<option value="${user.id}">${user.name}</option>`);
             });
+            updateTrackUsers();
         }
 
         function resetUserForm() {
@@ -3475,153 +3405,217 @@
             }
         }
 
-        // ==================== METAS TRIMESTRALES ====================
-
-        function getCurrentTrimesterLabel() {
-            const now = new Date();
-            const m = now.getMonth() + 1;
-            const t = m <= 3 ? 'T1' : m <= 6 ? 'T2' : m <= 9 ? 'T3' : 'T4';
-            return `${now.getFullYear()}-${t}`;
-        }
-
-        function initGoalsTab() {
-            $('#goalExerciseWeightlifting').empty();
-            $('#goalExerciseGimnastic').empty();
-            $('#goalExerciseResistance').empty();
-
-            exercises.filter(e => e.category === 'weightlifting').forEach(e =>
-                $('#goalExerciseWeightlifting').append(`<option value="${e.name}">${e.name}</option>`));
-            exercises.filter(e => e.category === 'gimnastic').forEach(e =>
-                $('#goalExerciseGimnastic').append(`<option value="${e.name}">${e.name}</option>`));
-            exercises.filter(e => e.category === 'resistance').forEach(e =>
-                $('#goalExerciseResistance').append(`<option value="${e.name}">${e.name}</option>`));
-
-            // Poblar el select de meta con la progresión real del ejercicio (evita texto libre que no calce)
-            populateGoalTargetOptions('goalExerciseGimnastic', 'goalTargetGimnastic');
-            populateGoalTargetOptions('goalExerciseResistance', 'goalTargetResistance');
-            $('#goalExerciseGimnastic').off('change').on('change', () => populateGoalTargetOptions('goalExerciseGimnastic', 'goalTargetGimnastic'));
-            $('#goalExerciseResistance').off('change').on('change', () => populateGoalTargetOptions('goalExerciseResistance', 'goalTargetResistance'));
-
-            $('#goalUser').empty().append('<option value="">Seleccionar atleta</option>');
-            users.filter(u => u.active).forEach(u =>
-                $('#goalUser').append(`<option value="${u.id}">${u.name}</option>`));
-
-            const trimActual = getCurrentTrimesterLabel();
-            $('#goalTrimester, #filterGoalsTrimester').val(trimActual);
-
-            if (currentSession.role === 'admin') {
-                loadBoxProgress();
-            } else {
-                $('#myTrimester').text(trimActual);
-                loadMyGoals();
-            }
-        }
-
-        function populateGoalTargetOptions(exerciseSelectId, targetSelectId) {
-            const exerciseName = $(`#${exerciseSelectId}`).val();
-            const exercise = exercises.find(e => e.name === exerciseName);
-            const targetSelect = $(`#${targetSelectId}`);
-            targetSelect.empty();
-
-            if (!exercise || !exercise.progressions || exercise.progressions.length === 0) {
-                targetSelect.append('<option value="">Sin progresión definida</option>');
-                return;
-            }
-            // La meta trimestral por defecto es el último nivel de la escalera (Meta)
-            exercise.progressions.forEach((nivel, idx) => {
-                const etiqueta = idx === exercise.progressions.length - 1 ? `${nivel} (Meta sugerida)` : nivel;
-                targetSelect.append(`<option value="${nivel}">${etiqueta}</option>`);
-            });
-            targetSelect.val(exercise.progressions[exercise.progressions.length - 1]);
-        }
-
-        async function saveGoals() {
-            $('#goalAlert').addClass('d-none');
-
-            const goalsToSave = [
-                { category: 'weightlifting', exercise: $('#goalExerciseWeightlifting').val(), target: $('#goalTargetWeightlifting').val() },
-                { category: 'gimnastic', exercise: $('#goalExerciseGimnastic').val(), target: $('#goalTargetGimnastic').val() },
-                { category: 'resistance', exercise: $('#goalExerciseResistance').val(), target: $('#goalTargetResistance').val() }
-            ];
-
-            if (goalsToSave.some(g => !g.target || !g.target.toString().trim())) {
-                $('#goalAlert').removeClass('d-none').text('Completa la meta de las 3 categorías.');
-                return;
-            }
-
-            const res = await apiCall('saveGoal', {
-                userId: $('#goalUser').val(),
-                trimester: $('#goalTrimester').val(),
-                goals: goalsToSave
-            });
-
-            if (!res.success) {
-                $('#goalAlert').removeClass('d-none').text(res.message);
-                return;
-            }
-
-            alert('Metas guardadas correctamente.');
-            $('#goalTargetWeightlifting').val('');
-            await refreshGoals();
-            loadBoxProgress();
-        }
-
-        async function loadBoxProgress() {
-            const trimester = $('#filterGoalsTrimester').val() || getCurrentTrimesterLabel();
-            const res = await apiCall('getGoals', { trimester: trimester });
-            if (!res.success) { $('#boxProgressBody').html(''); return; }
-
-            let rows = '';
-            for (const goal of res.goals) {
-                const progress = await apiCall('getQuarterProgress', { userId: goal.userId, trimester: trimester });
-                const match = progress.success ? progress.results.find(r => r.exercise === goal.exercise) : null;
-                rows += `
-                    <tr>
-                        <td>${goal.userName}</td>
-                        <td><span class="badge bg-secondary">${goal.category}</span></td>
-                        <td>${goal.exercise}</td>
-                        <td>${goal.target}</td>
-                        <td>${match && match.valorInicial != null ? match.valorInicial : '—'}</td>
-                        <td>${match && match.valorFinal != null ? match.valorFinal : '—'}</td>
-                    </tr>`;
-            }
-            $('#boxProgressBody').html(rows || '<tr><td colspan="6" class="text-center text-muted">Sin metas asignadas este trimestre</td></tr>');
-        }
-
-        async function loadMyGoals() {
-            const trimester = getCurrentTrimesterLabel();
-            const res = await apiCall('getQuarterProgress', { userId: currentSession.userId, trimester: trimester });
-
-            if (!res.success) {
-                $('#myGoalsCards').html(`<div class="col-12"><div class="alert alert-warning">${res.message}</div></div>`);
-                return;
-            }
-
-            const colors = { weightlifting: 'primary', gimnastic: 'info', resistance: 'success' };
-            const icons = { weightlifting: '🏋️', gimnastic: '🤸', resistance: '🏃' };
-
-            $('#myGoalsCards').html(res.results.map(r => `
-                <div class="col-md-4">
-                    <div class="card border-${colors[r.category]}">
-                        <div class="card-header bg-${colors[r.category]}">${icons[r.category]} ${r.category}</div>
-                        <div class="card-body">
-                            <h6>${r.exercise}</h6>
-                            <p class="mb-1"><strong>Meta:</strong> ${r.target}</p>
-                            <p class="mb-1"><strong>Inicial:</strong> ${r.valorInicial != null ? r.valorInicial : 'Sin registro'}</p>
-                            <p class="mb-1"><strong>Actual:</strong> ${r.valorFinal != null ? r.valorFinal : 'Sin registro'}</p>
-                            <small class="text-muted">${r.totalRegistros} registro(s) este trimestre</small>
-                        </div>
-                    </div>
-                </div>
-            `).join(''));
-        }
-
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('es-ES', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
+            });
+        }
+    
+        // ==================== SEGUIMIENTO SEMANAL / MENSUAL / TRIMESTRAL ====================
+        let weeklyRecords = [];
+        let trackCursor = new Date();
+
+        const TRACK_EXTRA = [
+            { name: 'Air Squat', category: 'weightlifting' },
+            { name: 'Row (remo)', category: 'endurance' },
+            { name: 'Run', category: 'endurance' },
+            { name: 'Kettlebell Swing', category: 'endurance' },
+            { name: 'Wall Ball', category: 'endurance' }
+        ];
+
+        const EX_GROUPS = {
+            'Pull-up': ['traccion'], 'Rope Climb': ['traccion'], 'Muscle-up': ['traccion', 'empuje'],
+            'Push-up': ['empuje'], 'Bench press': ['empuje'],
+            'Handstand Push-up': ['hombro'], 'Handstand walk': ['hombro', 'core'], 'Wall walk': ['hombro', 'core'],
+            'Snatch': ['hombro', 'posterior'], 'Push Jerk': ['hombro', 'piernas'], 'Split Jerk': ['hombro', 'piernas'],
+            'Clean & Jerk': ['posterior', 'hombro'], 'Clean': ['posterior'], 'Cluster': ['piernas', 'hombro'],
+            'Thruster': ['piernas', 'hombro'], 'Deadlift': ['posterior'],
+            'Front Squat': ['piernas'], 'Back Squat': ['piernas'], 'Air Squat': ['piernas'],
+            'Pistol Squat': ['piernas'], 'Box Jump': ['piernas'],
+            'Toes-to-bar': ['core', 'traccion'], 'Burpee': ['cardio', 'empuje'], 'Double Under': ['cardio'],
+            'Row (remo)': ['cardio', 'traccion'], 'Run': ['cardio', 'piernas'],
+            'Kettlebell Swing': ['posterior', 'cardio'], 'Wall Ball': ['piernas', 'hombro', 'cardio']
+        };
+
+        const REC = {
+            traccion: { label: 'Tracción (espalda/bíceps)', icon: 'fa-grip-lines',
+                mov: ['Dislocaciones con PVC/banda (2x10)', 'Rotación torácica en cuadrupedia (2x8/lado)'],
+                fort: ['Ring rows (3x10)', 'Face pulls con banda (3x15)', 'Scapular pulls (3x8)'],
+                est: ['Dorsal en pared/barra (30 s)', 'Bíceps y antebrazo en pared (30 s/lado)'] },
+            empuje: { label: 'Empuje (pecho/tríceps)', icon: 'fa-hand',
+                mov: ['Círculos de hombro con banda (2x10)', 'Cat-cow (2x10)'],
+                fort: ['Push-up plus (3x10)', 'Press con mancuerna (3x10)', 'Fondos en banco (3x8)'],
+                est: ['Pectoral en marco de puerta (30 s/lado)', 'Tríceps overhead (30 s/lado)'] },
+            hombro: { label: 'Hombros / Overhead', icon: 'fa-circle-up',
+                mov: ['Pass-through con PVC (2x10)', 'Rotaciones y flexo-extensión de muñeca (1 min)', 'Wall slides (2x10)'],
+                fort: ['Y-T-W en banco (2x8 c/u)', 'Rotación externa con banda (3x15)', 'Hang activo en barra (3x20 s)'],
+                est: ['Sleeper stretch (30 s/lado)', 'Dorsal en pared (30 s)', 'Flexores/extensores de antebrazo (30 s)'] },
+            piernas: { label: 'Piernas', icon: 'fa-shoe-prints',
+                mov: ['Rodilla a pared, tobillo (2x10/lado)', '90/90 de cadera (2x8/lado)', 'Sentadilla profunda sostenida (1-2 min)'],
+                fort: ['Puente de glúteo (3x15)', 'Bulgarian split squat (3x8/lado)', 'Step-up lateral (3x10)'],
+                est: ['Cuádriceps de rodillas (30 s/lado)', 'Flexor de cadera en lunge (30 s/lado)', 'Aductores en mariposa (45 s)'] },
+            posterior: { label: 'Cadena posterior', icon: 'fa-angles-up',
+                mov: ['Cat-cow (2x10)', 'Good morning con PVC (2x10)'],
+                fort: ['Hip thrust (3x12)', 'Bird-dog (3x8/lado)', 'Extensión de espalda/GHD (3x12)'],
+                est: ['Isquiotibiales sentado (30 s/lado)', 'Postura del niño (1 min)', 'Piriforme figura 4 (30 s/lado)'] },
+            core: { label: 'Core', icon: 'fa-bullseye',
+                mov: ['Rotación torácica en cuadrupedia (2x8/lado)', 'Cat-cow (2x10)'],
+                fort: ['Hollow hold (3x20 s)', 'Dead bug (3x8/lado)', 'Plancha lateral (3x20 s/lado)'],
+                est: ['Cobra (30 s)', 'Postura del niño (1 min)', 'Flexión lateral de pie (30 s/lado)'] },
+            cardio: { label: 'Resistencia / Cardio', icon: 'fa-heart-pulse',
+                mov: ['Círculos de tobillo (1 min)', 'Zancada con rotación (2x6/lado)'],
+                fort: ['Elevación de talones (3x15)', 'Plancha (3x30 s)', 'Saltos suaves a cuerda (3x20)'],
+                est: ['Gemelos y sóleo en pared (30 s/lado)', 'Cuádriceps de pie (30 s/lado)', 'Flexor de cadera (30 s/lado)'] }
+        };
+
+        function trackExercises() {
+            return exercises.concat(TRACK_EXTRA.filter(x => !exercises.some(e => e.name === x.name)));
+        }
+
+        function ymd(d) {
+            const z = n => String(n).padStart(2, '0');
+            return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
+        }
+
+        function trackUserId() {
+            return currentSession.role === 'member' ? currentSession.userId : $('#trackUser').val();
+        }
+
+        function updateTrackUsers() {
+            const sel = $('#trackUser'), prev = sel.val();
+            sel.empty().append('<option value="">Seleccionar miembro</option>');
+            users.filter(u => u.active).forEach(u => sel.append(`<option value="${u.id}">${u.name}</option>`));
+            if (prev) sel.val(prev);
+        }
+
+        function trackRange() {
+            const p = $('#trackPeriod').val(), c = new Date(trackCursor);
+            c.setHours(0, 0, 0, 0);
+            let s, e;
+            if (p === 'week') {
+                s = new Date(c); s.setDate(c.getDate() - ((c.getDay() + 6) % 7));
+                e = new Date(s); e.setDate(s.getDate() + 6);
+            } else if (p === 'month') {
+                s = new Date(c.getFullYear(), c.getMonth(), 1);
+                e = new Date(c.getFullYear(), c.getMonth() + 1, 0);
+            } else {
+                const q = Math.floor(c.getMonth() / 3) * 3;
+                s = new Date(c.getFullYear(), q, 1);
+                e = new Date(c.getFullYear(), q + 3, 0);
+            }
+            return { p, s, e };
+        }
+
+        function shiftTrack(n) {
+            const p = $('#trackPeriod').val(), d = new Date(trackCursor);
+            if (p === 'week') d.setDate(d.getDate() + 7 * n);
+            else if (p === 'month') d.setMonth(d.getMonth() + n, 1);
+            else d.setMonth(d.getMonth() + 3 * n, 1);
+            trackCursor = d;
+            renderTracking();
+        }
+
+        function renderTracking() {
+            const uid = trackUserId(), { p, s, e } = trackRange();
+            const fmt = d => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            $('#trackLabel').text(
+                p === 'quarter' ? `T${Math.floor(s.getMonth() / 3) + 1} ${s.getFullYear()}` :
+                p === 'month' ? s.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) :
+                `${fmt(s)} - ${fmt(e)}`
+            );
+            if (!uid) {
+                $('#trackBody, #trackStats, #trackRecs').html('<p class="text-muted">Seleccione un miembro.</p>');
+                return;
+            }
+            const sD = ymd(s), eD = ymd(e);
+            const recs = weeklyRecords.filter(r => r.userId === uid && r.date >= sD && r.date <= eD);
+            if (p === 'week') renderTrackWeek(s, recs); else renderTrackSummary(recs);
+            renderTrackStats(recs);
+            renderTrackRecs(recs);
+        }
+
+        function renderTrackWeek(s, recs) {
+            const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+            const dates = days.map((_, i) => { const d = new Date(s); d.setDate(s.getDate() + i); return ymd(d); });
+            const done = new Set(recs.map(r => r.exercise + '|' + r.date));
+            const cats = { gimnastic: 'Gimnásticos', weightlifting: 'Levantamiento', endurance: 'Resistencia' };
+            let h = '<div class="table-responsive"><table class="table table-sm text-center"><thead><tr><th class="text-start">Ejercicio</th>'
+                + days.map((d, i) => `<th>${d}<br><small>${dates[i].slice(8)}</small></th>`).join('') + '</tr></thead><tbody>';
+            Object.keys(cats).forEach(cat => {
+                h += `<tr><td colspan="8" class="text-start"><strong>${cats[cat]}</strong></td></tr>`;
+                trackExercises().filter(x => x.category === cat).forEach(x => {
+                    h += `<tr><td class="text-start">${x.name}</td>` + dates.map(dt =>
+                        `<td><input type="checkbox" class="form-check-input track-chk" data-ex="${x.name}" data-date="${dt}" ${done.has(x.name + '|' + dt) ? 'checked' : ''}></td>`
+                    ).join('') + '</tr>';
+                });
+            });
+            $('#trackBody').html(h + '</tbody></table></div>');
+        }
+
+        function renderTrackSummary(recs) {
+            const c = {};
+            recs.forEach(r => c[r.exercise] = (c[r.exercise] || 0) + 1);
+            const rows = Object.entries(c).sort((a, b) => b[1] - a[1]);
+            if (!rows.length) { $('#trackBody').html('<p class="text-muted">Sin registros en el periodo.</p>'); return; }
+            const max = rows[0][1];
+            $('#trackBody').html(rows.map(([n, v]) =>
+                `<div class="mb-2"><div class="d-flex justify-content-between"><span>${n}</span><strong>${v}</strong></div>
+                 <div class="progress-container"><div class="progress-fill" style="width:${v / max * 100}%"></div></div></div>`
+            ).join('') + '<small class="text-muted">Para registrar, use la vista Semanal.</small>');
+        }
+
+        function renderTrackStats(recs) {
+            const days = new Set(recs.map(r => r.date)).size;
+            const c = {};
+            recs.forEach(r => c[r.exercise] = (c[r.exercise] || 0) + 1);
+            const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+            $('#trackStats').html(`
+                <div class="d-flex justify-content-between mb-2"><span>Registros</span><strong>${recs.length}</strong></div>
+                <div class="d-flex justify-content-between mb-2"><span>Días activos</span><strong>${days}</strong></div>
+                <div class="d-flex justify-content-between"><span>Más realizado</span><strong>${top ? top[0] + ' (' + top[1] + ')' : '-'}</strong></div>`);
+        }
+
+        function renderTrackRecs(recs) {
+            const g = {};
+            recs.forEach(r => (EX_GROUPS[r.exercise] || []).forEach(k => g[k] = (g[k] || 0) + 1));
+            const keys = Object.keys(g).sort((a, b) => g[b] - g[a]);
+            if (!keys.length) { $('#trackRecs').html('<p class="text-muted">Registre ejercicios para ver recomendaciones.</p>'); return; }
+            const sec = (t, ic, arr) => `<h6 class="mt-2 text-primary"><i class="fas ${ic}"></i> ${t}</h6>
+                <ul class="small ps-3 mb-0">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+            $('#trackRecs').html(keys.map(k => {
+                const r = REC[k];
+                return `<div class="col-md-6 col-xl-4 mb-3"><div class="card h-100">
+                    <div class="card-header"><i class="fas ${r.icon}"></i> ${r.label} <span class="badge bg-dark float-end">${g[k]}x</span></div>
+                    <div class="card-body">${sec('Movilidad', 'fa-rotate', r.mov)}${sec('Fortalecimiento', 'fa-dumbbell', r.fort)}${sec('Estiramiento', 'fa-spa', r.est)}</div>
+                </div></div>`;
+            }).join(''));
+        }
+
+        function initTracking() {
+            updateTrackUsers();
+            renderTracking();
+            $('#trackUser, #trackPeriod').on('change', renderTracking);
+            $('#trackPrev').click(() => shiftTrack(-1));
+            $('#trackNext').click(() => shiftTrack(1));
+            $('#trackToday').click(() => { trackCursor = new Date(); renderTracking(); });
+            $('#tracking-tab').on('shown.bs.tab', renderTracking);
+
+            $(document).off('change.track').on('change.track', '.track-chk', async function () {
+                const el = $(this), uid = trackUserId();
+                const ex = el.attr('data-ex'), date = el.attr('data-date');
+                const category = (trackExercises().find(x => x.name === ex) || {}).category || '';
+                const res = await apiCall('toggleWeekly', { entry: { userId: uid, date, exercise: ex, category } });
+                if (!res || !res.success) {
+                    alert((res && res.message) || 'No se pudo guardar.');
+                    el.prop('checked', !el.prop('checked'));
+                    return;
+                }
+                if (res.done) weeklyRecords.push({ id: res.id, userId: uid, date, exercise: ex, category });
+                else weeklyRecords = weeklyRecords.filter(r => !(r.userId === uid && r.date === date && r.exercise === ex));
+                renderTracking();
             });
         }
     </script>
